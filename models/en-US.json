@@ -1,39 +1,61 @@
 {
   "interactionModel": {
     "languageModel": {
-      "invocationName": "greeter",
+      "invocationName": "don't wake the monster",
       "types": [
 
       ],
       "intents": [
         {
-          "name": "AMAZON.CancelIntent",
-          "samples": [
-
-          ]
+          "name": "AMAZON.CancelIntent"
         },
         {
-          "name": "AMAZON.HelpIntent",
-          "samples": [
-
-          ]
+          "name": "AMAZON.YesIntent"
         },
         {
-          "name": "AMAZON.StopIntent",
-          "samples": [
-
-          ]
+          "name": "AMAZON.NoIntent"
         },
         {
-          "name": "HelloWorldIntent",
+          "name": "AMAZON.HelpIntent"
+        },
+        {
+          "name": "AMAZON.StopIntent"
+        },
+        {
+          "name": "colorIntent",
           "slots": [
-
+            {
+              "name": "color",
+              "type": "COLORS"
+            }
           ],
           "samples": [
-            "hello",
-            "say hello",
-            "say hello world"
+            "{color}",
+            "I like {color}",
+            "let's go with {color}"
           ]
+        }
+      ],
+      "types": [
+        {
+          "values": [
+            {
+              "name": {
+                "value": "green"
+              }
+            },
+            {
+              "name": {
+                "value": "red"
+              }
+            },
+            {
+              "name": {
+                "value": "blue"
+              }
+            }
+          ],
+          "name": "COLORS"
         }
       ]
     }

@@ -5,24 +5,39 @@
         "en-US": {
           "summary": "Sample Short Description",
           "examplePhrases": [
-            "Alexa open hello world",
-            "Alexa tell hello world hello",
-            "Alexa ask hello world say hello"
+            "Alexa play Don't Wake the Monster",
+            "Alexa open Don't Wake the Monster",
+            "Alexa launch Don't Wake the Monster"
           ],
           "name": "Don't Wake the Monster",
-          "description": "Sample Full Description"
+          "description": "A game of avoiding mines."
         }
       },
       "isAvailableWorldwide": true,
       "testingInstructions": "Sample Testing Instructions.",
-      "category": "EDUCATION_AND_REFERENCE",
-      "distributionCountries": []
+      "category": "CHILDRENS_GAMES",
+      "distributionCountries": ["US", "DE", "GB"],
+       "gadgetSupport": {
+        "requirement": "REQUIRED", 
+        "numPlayersMin": 2,
+        "numPlayersMax": 2,
+        "minGadgetButtons": 2,
+        "maxGadgetButtons": 2
+      }
     },
     "apis": {
       "custom": {
         "endpoint": {
           "sourceDir": "lambda/custom"
-        }
+        },
+        "interfaces": [
+           {
+            "type": "GAME_ENGINE"
+          },
+          {
+            "type": "GADGET_CONTROLLER"
+          }
+        ]
       }
     },
     "manifestVersion": "1.0"
