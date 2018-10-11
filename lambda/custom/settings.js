@@ -36,9 +36,6 @@ module.exports = {
     // This is an audio file from the ASK Soundbank: https://developer.amazon.com/docs/custom-skills/foley-sounds.html
     WAITING_AUDIO: '<audio src="https://s3.amazonaws.com/ask-soundlibrary/foley/amzn_sfx_rhythmic_ticking_30s_01.mp3"/>',
 
-    // The following are going to be the colors we allow in the skill
-    COLORS_ALLOWED: [ 'blue', 'green', 'red' ],
-
     // We'll set up a map of custom colors to each of the three allowed colord: blue, green and red
     BREATH_CUSTOM_COLORS: { 
         // map the 'blue' selection to a very light blue color to show as a pulsating animation, while waiting for button presses
@@ -46,7 +43,10 @@ module.exports = {
         // map the 'green' selection to a very light blue color to show as a pulsating animation, while waiting for button presses
         'green': '184518',
         // map the 'red' selection to a very light blue color to show as a pulsating animation, while waiting for button presses
-        'red': '603018'
+        'red': '603018',
+        'black': '000000',
+        'orange': 'e67e22',
+        'purple': '8e44ad',
     },
 
     // Define animations to be played on button down and button up that are like the default animations on the buttons
@@ -61,5 +61,29 @@ module.exports = {
             'targetGadgets': [], 
             'animations': BasicAnimations.SolidAnimation(1, 'black', 100)
         }
+    },
+    GAME:{
+        'playerCount': 0,
+        'overallScore': {
+            'player1': 0,
+            'player2': 0,
+            'player3': 0,
+            'player4': 0
+        },
+        'roundScore': {
+            'player1': 0,
+            'player2': 0,
+            'player3': 0,
+            'player4': 0
+        },
+        'playerCharacter': {
+            'player1': '',
+            'player2': '',
+            'player3': '',
+            'player4': ''
+        },
+        'characterRollCounter': 0,
+        'round': 1,
+        'currentPlayer': 0
     }
 };

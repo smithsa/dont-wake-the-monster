@@ -22,17 +22,77 @@
           "name": "AMAZON.StopIntent"
         },
         {
-          "name": "colorIntent",
+          "name": "addPlayersIntent",
           "slots": [
             {
-              "name": "color",
-              "type": "COLORS"
+              "name": "numPlayers",
+              "type": "AMAZON.NUMBER"
             }
           ],
           "samples": [
-            "{color}",
-            "I like {color}",
-            "let's go with {color}"
+            "{numPlayers}",
+            "{numPlayers} players",
+            "{numPlayers} player",
+            "there is {numPlayers} player",
+            "there are {numPlayers} players",
+            "there are {numPlayers}",
+            "there is {numPlayers} players",
+            "i have {numPlayers} player",
+            "i have {numPlayers}",
+            "i have {numPlayers} players"
+          ]
+        },
+        {
+          "name": "chooseCharacterIntent",
+          "slots": [
+            {
+              "name": "gameCharacter",
+              "type": "CHARACTERS"
+            }
+          ],
+          "samples": [
+            "{gameCharacter}",
+            "i want {gameCharacter}",
+            "give me {gameCharacter}",
+            "i'll be {gameCharacter}",
+            "i will be {gameCharacter}",
+            "i want to be {gameCharacter}",
+            "can i be {gameCharacter}",
+            "the {gameCharacter}",
+            "i want the {gameCharacter}",
+            "give me the {gameCharacter}",
+            "i'll be the {gameCharacter}",
+            "i will be the {gameCharacter}",
+            "i want to be the {gameCharacter}",
+            "can i be the {gameCharacter}",
+            "a {gameCharacter}",
+            "i want a {gameCharacter}",
+            "give me a {gameCharacter}",
+            "i'll be a {gameCharacter}",
+            "i will be a {gameCharacter}",
+            "i want to a be {gameCharacter}",
+            "can i be a {gameCharacter}",
+            "{gameCharacter} please",
+            "i want {gameCharacter} please",
+            "give me {gameCharacter} please",
+            "i'll be {gameCharacter} please",
+            "i will be {gameCharacter} please",
+            "i want to be {gameCharacter} please",
+            "can i be {gameCharacter} please",
+            "the {gameCharacter} please",
+            "i want the {gameCharacter} please",
+            "give me the {gameCharacter} please",
+            "i'll be the {gameCharacter} please",
+            "i will be the {gameCharacter} please",
+            "i want to be the {gameCharacter} please",
+            "can i be the {gameCharacter} please",
+            "a {gameCharacter} please",
+            "i want a {gameCharacter} please",
+            "give me a {gameCharacter} please",
+            "i'll be a {gameCharacter} please",
+            "i will be a {gameCharacter} please",
+            "i want to a be {gameCharacter} please",
+            "can i be a {gameCharacter} please"
           ]
         }
       ],
@@ -41,21 +101,30 @@
           "values": [
             {
               "name": {
-                "value": "green"
+                "value": "fungus beetle",
+                "synonyms": ["fungus","beetle"]
               }
             },
             {
               "name": {
-                "value": "red"
+                "value": "star-nosed mole",
+                "synonyms": ["star-nosed","mole"]
               }
             },
             {
               "name": {
-                "value": "blue"
+                "value": "fried-egg jellyfish",
+                "synonyms": ["fried-egg","jellyfish"]
+              }
+            },
+            {
+              "name": {
+                "value": "furry potato",
+                "synonyms": ["furry","potato"]
               }
             }
           ],
-          "name": "COLORS"
+          "name": "CHARACTERS"
         }
       ]
     }

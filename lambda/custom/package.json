@@ -6,7 +6,9 @@
   "dependencies": {
     "ask-sdk-core": "^2.0.3",
     "ask-sdk-dynamodb-persistence-adapter": "^2.0.3",
-    "ask-sdk-model": "^1.3.0"
+    "ask-sdk-model": "^1.3.0",
+    "i18next": "^11.9.1",
+    "i18next-sprintf-postprocessor": "^0.2.2"
   },
   "keywords": [
     "alexa",

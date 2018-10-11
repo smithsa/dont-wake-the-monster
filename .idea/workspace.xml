@@ -2,14 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7bbfd04c-c78b-4ec6-ac1e-82b235248120" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/lambda/custom/i18n/de.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lambda/custom/i18n/en.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.ask/config" beforeDir="false" afterPath="$PROJECT_DIR$/.ask/config" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lambda/custom/gameplay.js" beforeDir="false" afterPath="$PROJECT_DIR$/lambda/custom/gameplay.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lambda/custom/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/lambda/custom/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lambda/custom/node_modules/ask-sdk-core/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/lambda/custom/node_modules/ask-sdk-core/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lambda/custom/node_modules/ask-sdk-model/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/lambda/custom/node_modules/ask-sdk-model/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lambda/custom/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/lambda/custom/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lambda/custom/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/lambda/custom/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lambda/custom/rollcall.js" beforeDir="false" afterPath="$PROJECT_DIR$/lambda/custom/rollcall.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lambda/custom/settings.js" beforeDir="false" afterPath="$PROJECT_DIR$/lambda/custom/settings.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/en-US.json" beforeDir="false" afterPath="$PROJECT_DIR$/models/en-US.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/skill.json" beforeDir="false" afterPath="$PROJECT_DIR$/skill.json" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -31,29 +34,29 @@
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="gitignore" value="1" />
-          <entry key="js" value="6" />
-          <entry key="json" value="5" />
+          <entry key="js" value="37" />
+          <entry key="json" value="14" />
           <entry key="ts" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="JSON" value="5" />
-          <entry key="JavaScript" value="6" />
+          <entry key="JSON" value="14" />
+          <entry key="JavaScript" value="37" />
           <entry key="PLAIN_TEXT" value="1" />
           <entry key="TypeScript" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="js" value="1538" />
-          <entry key="json" value="4" />
+          <entry key="js" value="4670" />
+          <entry key="json" value="297" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JSON" value="4" />
-          <entry key="JavaScript" value="1538" />
+          <entry key="JSON" value="297" />
+          <entry key="JavaScript" value="4670" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.js.language.service.starts">
@@ -64,102 +67,147 @@
     </session>
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/lambda/custom/gameplay.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="368">
-              <caret line="296" column="103" selection-start-line="296" selection-start-column="103" selection-end-line="296" selection-end-column="103" />
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/lambda/custom/index.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="205">
-              <caret line="72" column="12" selection-start-line="72" selection-start-column="12" selection-end-line="72" selection-end-column="53" />
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-                <element signature="e#2830#3474#0" />
-                <element signature="e#3499#6210#0" />
-                <element signature="e#6235#6982#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/lambda/custom/settings.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="126">
-              <caret line="38" column="41" selection-start-line="38" selection-start-column="41" selection-end-line="38" selection-end-column="41" />
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/lambda/custom/rollcall.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="369">
-              <caret line="246" column="32" lean-forward="true" selection-start-line="246" selection-start-column="32" selection-end-line="246" selection-end-column="32" />
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/skill.json">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="253">
-              <caret line="18" column="36" selection-start-line="18" selection-start-column="36" selection-end-line="18" selection-end-column="36" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <splitter split-orientation="horizontal" split-proportion="0.6882556">
+      <split-first>
+        <leaf>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/lambda/custom/rollcall.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="161">
+                  <caret line="166" column="45" selection-start-line="166" selection-start-column="26" selection-end-line="166" selection-end-column="45" />
+                  <folding>
+                    <element signature="n#!!doc" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/lambda/custom/gameplay.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="117">
+                  <caret line="224" column="64" selection-start-line="224" selection-start-column="51" selection-end-line="224" selection-end-column="64" />
+                  <folding>
+                    <element signature="n#!!doc" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/lambda/custom/util/gadgetDirectives.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="-895">
+                  <caret line="16" column="20" selection-start-line="16" selection-start-column="4" selection-end-line="16" selection-end-column="20" />
+                  <folding>
+                    <element signature="e#65#364#0" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/lambda/custom/settings.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="391">
+                  <caret line="86" column="26" selection-start-line="86" selection-start-column="26" selection-end-line="86" selection-end-column="26" />
+                  <folding>
+                    <element signature="n#!!doc" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/lambda/custom/i18n/en.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="204">
+                  <caret line="30" column="37" selection-start-line="30" selection-start-column="32" selection-end-line="30" selection-end-column="37" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/lambda/custom/index.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="371">
+                  <caret line="307" column="60" selection-start-line="307" selection-start-column="32" selection-end-line="307" selection-end-column="60" />
+                  <folding>
+                    <element signature="n#!!doc" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/models/en-US.json">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="74">
+                  <caret line="45" column="40" selection-start-line="45" selection-start-column="19" selection-end-line="45" selection-end-column="40" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-first>
+      <split-second>
+        <leaf>
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/lambda/custom/i18n/en.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="203">
+                  <caret line="31" column="38" selection-start-line="31" selection-start-column="38" selection-end-line="31" selection-end-column="38" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-second>
+    </splitter>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+      </list>
+    </option>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>first_button_checked_in</find>
-      <find>ROLL_CALL_EVENTS</find>
+      <find>deviceIds</find>
+      <find>first_button</find>
+      <find>sessionAttributes.DeviceIDs</find>
+      <find>Helper</find>
+      <find>AddPlayersIntentHandler</find>
+      <find>GameEngineInputHandler</find>
+      <find>Ok.</find>
+      <find>Ok</find>
+      <find>colorIntent</find>
+      <find>ColorIntentHandler</find>
+      <find>SKILL</find>
+      <find>Game</find>
+      <find>Intent</find>
+      <find>ok</find>
+      <find>playerCount</find>
+      <find>chooseCharacterIntent</find>
+      <find>intentchooseCharacterIntent</find>
+      <find>game</find>
+      <find>BREATH_CUSTOM_COLORS</find>
+      <find>COLORS_ALLOWED</find>
+      <find>.game</find>
+      <find>characterNames</find>
+      <find>chac</find>
+      <find>breath</find>
       <find>GadgetDirectives</find>
       <find>push</find>
-      <find>HandleButtonPressed</find>
-      <find>COLORS_ALLOWED</find>
-      <find>DefaultHandler</find>
-      <find>Okay</find>
-      <find>it is</find>
-      <find>startInputHandler</find>
-      <find>stopInputHandler</find>
-      <find>CurrentInputHandlerID</find>
-      <find>!!</find>
-      <find>buttonCount</find>
-      <find>DIRECT_BUTTON_DOWN_RECOGNIZER</find>
-      <find>deviceIds</find>
-      <find>DefaultHand</find>
-      <find>this.</find>
-      <find>HandleFirstButtonCheckIn</find>
-      <find>gadgetDirectives</find>
-      <find>GamePlay</find>
-      <find>button_down</find>
-      <find>You pressed the button.</find>
-      <find>targetGadgets</find>
-      <find>this</find>
-      <find>ColorIntentHandler</find>
-      <find>HandleButtonStepped</find>
-      <find>playerStepDirective</find>
-      <find>Timeout</find>
-      <find>not</find>
+      <find>availableCharacters</find>
+      <find>color</find>
+      <find>sessionAttributes.characterProperties</find>
+      <find>currentPlayer</find>
     </findStrings>
+    <replaceStrings>
+      <replace>availableCharacters</replace>
+    </replaceStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$</dir>
     </dirStrings>
@@ -170,10 +218,16 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/models/en-US.json" />
+        <option value="$PROJECT_DIR$/lambda/custom/language.js" />
         <option value="$PROJECT_DIR$/skill.json" />
+        <option value="$PROJECT_DIR$/lambda/custom/util/helpers.js" />
+        <option value="$PROJECT_DIR$/lambda/custom/i18n/de.js" />
+        <option value="$PROJECT_DIR$/lambda/custom/i18n/en.js" />
+        <option value="$PROJECT_DIR$/models/en-US.json" />
         <option value="$PROJECT_DIR$/lambda/custom/index.js" />
+        <option value="$PROJECT_DIR$/lambda/custom/rollcall.js" />
         <option value="$PROJECT_DIR$/lambda/custom/gameplay.js" />
+        <option value="$PROJECT_DIR$/lambda/custom/settings.js" />
       </list>
     </option>
   </component>
@@ -192,10 +246,10 @@
     </packageJsonPaths>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="41" />
-    <option name="y" value="23" />
-    <option name="width" value="1161" />
-    <option name="height" value="763" />
+    <option name="x" value="18" />
+    <option name="y" value="64" />
+    <option name="width" value="1278" />
+    <option name="height" value="766" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -220,6 +274,13 @@
               <item name="Don't Wake the Monster" type="462c0819:PsiDirectoryNode" />
               <item name="lambda" type="462c0819:PsiDirectoryNode" />
               <item name="custom" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Don't Wake the Monster" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Don't Wake the Monster" type="462c0819:PsiDirectoryNode" />
+              <item name="lambda" type="462c0819:PsiDirectoryNode" />
+              <item name="custom" type="462c0819:PsiDirectoryNode" />
+              <item name="i18n" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Don't Wake the Monster" type="b2602c69:ProjectViewProjectNode" />
@@ -290,23 +351,24 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1539013760541</updated>
-      <workItem from="1539013764492" duration="39480000" />
+      <workItem from="1539013764492" duration="59734000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="39480000" />
+    <option name="totallyTimeSpent" value="59734000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="41" y="23" width="1161" height="763" extended-state="0" />
+    <frame x="18" y="64" width="1278" height="766" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="Favorites" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.07875895" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="TypeScript" />
       <window_info anchor="bottom" id="Docker" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" />
-      <window_info active="true" anchor="bottom" id="Terminal" visible="true" weight="0.1728763" />
+      <window_info anchor="bottom" id="Terminal" visible="true" weight="0.17210683" />
       <window_info anchor="bottom" id="Event Log" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32935917" />
@@ -321,15 +383,15 @@
     </layout>
     <layout-to-restore>
       <window_info id="Favorites" order="0" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.25" />
+      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.25" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Docker" order="0" show_stripe_button="false" />
       <window_info anchor="bottom" id="TypeScript" order="1" />
-      <window_info anchor="bottom" id="Terminal" order="2" weight="0.1728763" />
+      <window_info anchor="bottom" id="Terminal" order="2" visible="true" weight="0.1728763" />
       <window_info anchor="bottom" id="Event Log" order="3" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="4" />
       <window_info anchor="bottom" id="Message" order="5" />
-      <window_info active="true" anchor="bottom" id="Find" order="6" visible="true" weight="0.32935917" />
+      <window_info anchor="bottom" id="Find" order="6" weight="0.32935917" />
       <window_info anchor="bottom" id="Run" order="7" />
       <window_info anchor="bottom" id="Debug" order="8" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="9" weight="0.25" />
@@ -346,16 +408,21 @@
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/lambda/custom/util/gadgetDirectives.js</url>
+          <line>2</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/en-US.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="24" column="30" selection-start-line="24" selection-start-column="19" selection-end-line="24" selection-end-column="30" />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lambda/custom/node_modules/ask-sdk-model/index.d.ts">
       <provider selected="true" editor-type-id="text-editor">
@@ -364,47 +431,71 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/lambda/custom/language.js">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lambda/custom/package.json">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lambda/custom/util/helpers.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" selection-start-line="2" selection-end-line="35" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/skill.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="253">
-          <caret line="18" column="36" selection-start-line="18" selection-start-column="36" selection-end-line="18" selection-end-column="36" />
+        <state relative-caret-position="360">
+          <caret line="24" column="29" selection-start-line="24" selection-start-column="29" selection-end-line="24" selection-end-column="29" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lambda/custom/util/gadgetDirectives.js">
+    <entry file="file://$PROJECT_DIR$/lambda/custom/i18n/de.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="160">
-          <caret line="47" column="21" selection-start-line="47" selection-start-column="8" selection-end-line="47" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lambda/custom/settings.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="38" column="41" selection-start-line="38" selection-start-column="41" selection-end-line="38" selection-end-column="41" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
+        <state relative-caret-position="375">
+          <caret line="25" selection-start-line="25" selection-end-line="25" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lambda/custom/index.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="205">
-          <caret line="72" column="12" selection-start-line="72" selection-start-column="12" selection-end-line="72" selection-end-column="53" />
+        <state relative-caret-position="371">
+          <caret line="307" column="60" selection-start-line="307" selection-start-column="32" selection-end-line="307" selection-end-column="60" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <element signature="e#2830#3474#0" />
-            <element signature="e#3499#6210#0" />
-            <element signature="e#6235#6982#0" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/en-US.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="74">
+          <caret line="45" column="40" selection-start-line="45" selection-start-column="19" selection-end-line="45" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lambda/custom/util/gadgetDirectives.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-895">
+          <caret line="16" column="20" selection-start-line="16" selection-start-column="4" selection-end-line="16" selection-end-column="20" />
+          <folding>
+            <element signature="e#65#364#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lambda/custom/i18n/en.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="30" column="37" selection-start-line="30" selection-start-column="32" selection-end-line="30" selection-end-column="37" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lambda/custom/rollcall.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="369">
-          <caret line="246" column="32" lean-forward="true" selection-start-line="246" selection-start-column="32" selection-end-line="246" selection-end-column="32" />
+        <state relative-caret-position="161">
+          <caret line="166" column="45" selection-start-line="166" selection-start-column="26" selection-end-line="166" selection-end-column="45" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>
@@ -413,8 +504,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/lambda/custom/gameplay.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="368">
-          <caret line="296" column="103" selection-start-line="296" selection-start-column="103" selection-end-line="296" selection-end-column="103" />
+        <state relative-caret-position="117">
+          <caret line="224" column="64" selection-start-line="224" selection-start-column="51" selection-end-line="224" selection-end-column="64" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lambda/custom/settings.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="86" column="26" selection-start-line="86" selection-start-column="26" selection-end-line="86" selection-end-column="26" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>

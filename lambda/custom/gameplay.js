@@ -134,74 +134,149 @@ const GamePlay = {
         return handlerInput.responseBuilder.getResponse();
 
     },
-
-    ColorIntentHandler: function(handlerInput) {
-        console.log("GamePlay::colorIntent");
+    AddPlayersIntentHandler: function(handlerInput) {
+        console.log("GamePlay::addPlayersIntent");
         const {attributesManager} = handlerInput;
         const ctx = attributesManager.getRequestAttributes();
         const sessionAttributes = attributesManager.getSessionAttributes();
         const { request } = handlerInput.requestEnvelope;
-                   
-        const uColor = request.intent.slots.color.value;
-        console.log("User color: " + uColor);
-        
-        if (uColor === undefined || Settings.COLORS_ALLOWED.indexOf(uColor) === -1) {
-            ctx.reprompt = ["What color was that? Please pick a valid color!"];
+
+        const numberPlayers = request.intent.slots.numPlayers.value;
+
+        if (numberPlayers === undefined) {
+            ctx.reprompt = ["Please give me the number of player again."];
             ctx.outputSpeech = ["Sorry, I didn't get that. " + ctx.reprompt[0]];
             ctx.openMicrophone = false;
             return handlerInput.responseBuilder.getResponse();
-        } else {
+        }else if(numberPlayers > 4){
+            ctx.reprompt = ["Please give me the number of players again."];
+            ctx.outputSpeech = ["Sorry, you have too many players. The maximum number of players is 4. " + ctx.reprompt[0]];
+            ctx.openMicrophone = false;
+            return handlerInput.responseBuilder.getResponse();
+        }else {
             let deviceIds = sessionAttributes.DeviceIDs;
+            sessionAttributes.game.playerCount = numberPlayers;
 
-            sessionAttributes.ColorChoice = uColor;
-            deviceIds = deviceIds.slice(-2);
-            console.log('DEVICE IDS SPITOUT:', deviceIds);
-            // Build Start Input Handler Directive
-            // Build Start Input Handler Directive
-            //'recognizers': playerStepDirective(deviceIds[1], 3),
-            ctx.directives.push(GadgetDirectives.startInputHandler({
-                'timeout': 30000,
-                'recognizers': playerStepDirective(deviceIds[1]),
-                'events': DIRECT_MODE_EVENTS
-            } ));
+            //deviceIds = deviceIds.slice(-1);
+            //TODO: handle animations at this point
+            // ctx.directives.push(GadgetDirectives.setButtonDownAnimation({
+            //     'targetGadgets': deviceIds,
+            //     'animations': BasicAnimations.SolidAnimation(1, "red", 2000)
+            // } ));
+            //
+            // // build 'button up' animation, based on the users color of choice, for when the button is released
+            // ctx.directives.push(GadgetDirectives.setButtonUpAnimation({
+            //     'targetGadgets': deviceIds,
+            //     'animations': BasicAnimations.SolidAnimation(1, "red", 200)
+            // } ));
+
+
+            console.log('**list ', sessionAttributes.characterProperties);
+            let availableCharacters = sessionAttributes.characterProperties.reduce(function(acc, list_item) {
+                 acc.push(list_item.name);
+                 return acc;
+                }, []).reduce(function(accumulator, name, index, list){
+                if(index === list.length-1){
+                    accumulator = accumulator + ", and " + name;
+                }else if(index == 0){
+                    accumulator = accumulator + name + ", ";
+                }else{
+                    accumulator = accumulator + ", " + name;
+                }
+                return accumulator;
+            }, "");
+
+
+            ctx.outputSpeech = ["Ok. " + numberPlayers + " players it is."];
+            ctx.outputSpeech.push("Now each player can choose a character.");
+            ctx.outputSpeech.push("The character you can choose from are: "+availableCharacters+".");
+            ctx.outputSpeech.push("Player 1, what character do you want?");
+            ctx.outputSpeech.push(Settings.WAITING_AUDIO);
+
+            ctx.openMicrophone = false;
+            return handlerInput.responseBuilder.getResponse();
+        }
+    },
+    ChooseCharacterIntentHandler: function(handlerInput) {
+        console.log("GamePlay::chooseCharacterIntent");
+        const {attributesManager} = handlerInput;
+        const ctx = attributesManager.getRequestAttributes();
+        const sessionAttributes = attributesManager.getSessionAttributes();
+        const { request } = handlerInput.requestEnvelope;
+
+        let gameCharacter = request.intent.slots.gameCharacter.value;
+
+        if (gameCharacter === undefined) {
+            ctx.reprompt = ["Please give me the numb"];
+            ctx.outputSpeech = ["Sorry, I didn't get that. " + ctx.reprompt[0]];
+            ctx.openMicrophone = false;
+            return handlerInput.responseBuilder.getResponse();
+        }else if(gameCharacter in sessionAttributes.chosenCharacters){
+            ctx.reprompt = ["Choose another character."];
+            ctx.outputSpeech = ["Sorry, that character has already been picked by a player. " + ctx.reprompt[0]];
+            ctx.openMicrophone = false;
+            return handlerInput.responseBuilder.getResponse();
+        }else {
+            let deviceIds = sessionAttributes.DeviceIDs;
+            //set the players character and get the next character counts
+            let currentPlayer = sessionAttributes.game.currentPlayer;
+            let currentPlayerKey = "player"+currentPlayer;
+            sessionAttributes.game.currentPlayer = sessionAttributes.game.currentPlayer+1;
+            sessionAttributes.game.playerCharacter[currentPlayerKey] = gameCharacter;
+
+            //adding character so no one else can choose in future
+            sessionAttributes.chosenCharacters.push(gameCharacter);
+
+            deviceIds = deviceIds.slice(-1);
+
+            //TODO get color animations
+            //get the color of the character
+            let characterColor = sessionAttributes.characterProperties.find(function (item) {
+                return item.name == gameCharacter;
+            });
+            console.log('characterColor', characterColor);
+            characterColor = characterColor.color;
+            console.log('characterColor', characterColor);
 
             // Save Input Handler Request ID
             sessionAttributes.CurrentInputHandlerID = request.requestId;
             console.log("Current Input Handler ID: " + sessionAttributes.CurrentInputHandlerID);
 
-
-
-
-            // // Build 'idle' breathing animation, based on the users color of choice, that will play immediately
-            // ctx.directives.push(GadgetDirectives.setIdleAnimation({
-            //     'targetGadgets': deviceIds,
-            //     'animations': BasicAnimations.BreatheAnimation(30, Settings.BREATH_CUSTOM_COLORS[uColor], 450)
-            // } ));
-
-            // Build 'button down' animation, based on the users color of choice, for when the button is pressed
-            ctx.directives.push(GadgetDirectives.setButtonDownAnimation({ 
-                'targetGadgets': deviceIds, 
-                'animations': BasicAnimations.SolidAnimation(1, uColor, 2000) 
+            //TODO: add animation for the player picked.
+            ctx.directives.push(GadgetDirectives.setIdleAnimation({
+                'targetGadgets': deviceIds,
+                'animations': BasicAnimations.SolidAnimation(1, characterColor, 2000)
             } ));
 
-            // build 'button up' animation, based on the users color of choice, for when the button is released
-            ctx.directives.push(GadgetDirectives.setButtonUpAnimation({ 
-                'targetGadgets': deviceIds, 
-                'animations': BasicAnimations.SolidAnimation(1, uColor, 200) 
-            } ));
 
-            ctx.outputSpeech = ["Ok. " + uColor + " it is."];
-            ctx.outputSpeech.push("When you press a button, it will now turn " + uColor + ".");
-            ctx.outputSpeech.push("Pressing the button will also interrupt me if I'm speaking");
-            ctx.outputSpeech.push("or playing music. I'll keep talking so you can interrupt me.");
-            ctx.outputSpeech.push("Go ahead and try it.");
-            ctx.outputSpeech.push(Settings.WAITING_AUDIO);            
-            
+            //TODO get list of remaining
+            let chosenCharacters = sessionAttributes.chosenCharacters;
+            let availableCharacters = sessionAttributes.characterProperties.reduce(function(list, list_item) {
+                    list.push(list_item.name);
+                    return list;
+                }, []
+            ).filter(function(name) {
+                return  chosenCharacters.indexOf(name) === -1;
+            }).reduce(function(accumulator, name, index, list){
+                if(index === list.length-1){
+                    accumulator = accumulator + ", and " + name;
+                }else if(index == 0){
+                    accumulator = accumulator + name;
+                }else{
+                    accumulator = accumulator + ", " + name;
+                }
+                return accumulator;
+            }, "");
+
+            ctx.outputSpeech = ["Got it player " + currentPlayer + ". You are the "+gameCharacter+"."];
+            ctx.outputSpeech.push("The characters remaining are. "+availableCharacters+".");
+            ctx.outputSpeech.push("Player "+sessionAttributes.game.currentPlayer+", which character would you like?");
+            ctx.outputSpeech.push(Settings.WAITING_AUDIO);
+
             ctx.openMicrophone = false;
             return handlerInput.responseBuilder.getResponse();
         }
     },
-
     HandleTimeout: function(handlerInput) {
         console.log("GamePlay::InputHandlerEvent::timeout");
         const {attributesManager} = handlerInput;

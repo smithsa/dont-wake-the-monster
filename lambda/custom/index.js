@@ -26,6 +26,15 @@ const Settings = require('settings.js');
 const RollCall = require('rollcall.js');
 const GamePlay = require('gameplay.js');
 
+//import libraries for using sprintf for localization
+const i18n = require('i18next');
+const sprintf = require('i18next-sprintf-postprocessor');
+
+const languageStrings = {
+    'en' : require('./i18n/en'),
+    'de' : require('./i18n/de')
+}
+
 let skill;
  
 exports.handler = function (event, context) {
@@ -44,6 +53,7 @@ exports.handler = function (event, context) {
              GlobalHandlers.SessionEndedRequestHandler,
              GlobalHandlers.DefaultHandler
          )
+         .addRequestInterceptors(LocalizationInterceptor)
          .addRequestInterceptors(GlobalHandlers.RequestInterceptor)
          .addResponseInterceptors(GlobalHandlers.ResponseInterceptor)
          .addErrorHandlers(GlobalHandlers.ErrorHandler)
@@ -69,7 +79,6 @@ const GlobalHandlers = {
         },
         handle(handlerInput) {
             console.log("LaunchRequestHandler: handling request");
-
             return RollCall.NewSession(handlerInput);
         }
     },
@@ -178,12 +187,9 @@ const GlobalHandlers = {
                 // In this request type, we'll see one or more incoming events
                 // that correspond to the StartInputHandler we sent above.
                 switch (gameEngineEvents[i].name) {
-                    case 'first_button_checked_in':
+                    case 'button_checked_in':
                         ctx.gameInputEvents = gameEngineEvents[i].inputEvents;
-                        return RollCall.HandleFirstButtonCheckIn(handlerInput);
-                    case 'second_button_checked_in':
-                        ctx.gameInputEvents = gameEngineEvents[i].inputEvents;
-                        return RollCall.HandleSecondButtonCheckIn(handlerInput);
+                        return RollCall.HandleButtonCheckIn(handlerInput);
                     case 'button_down_event':
                         if (sessionAttributes.state == Settings.SKILL_STATES.PLAY_MODE) {
                             ctx.gameInputEvents = gameEngineEvents[i].inputEvents;
@@ -293,10 +299,15 @@ const GlobalHandlers = {
         handle(handlerInput) {            
             console.log("Global.DefaultHandler: handling request");
             if (handlerInput.requestEnvelope.request.type === 'IntentRequest'
-                && handlerInput.requestEnvelope.request.intent.name === 'colorIntent') {
-                return GamePlay.ColorIntentHandler(handlerInput);
+                && handlerInput.requestEnvelope.request.intent.name === 'addPlayersIntent') {
+                return GamePlay.AddPlayersIntentHandler(handlerInput);
             }
- 
+
+            if (handlerInput.requestEnvelope.request.type === 'IntentRequest'
+                && handlerInput.requestEnvelope.request.intent.name === 'chooseCharacterIntent') {
+                return GamePlay.ChooseCharacterIntentHandler(handlerInput);
+            }
+
             const ctx = handlerInput.attributesManager.getRequestAttributes();
  
             // otherwise, try to let the user know that we couldn't understand the request 
@@ -391,4 +402,43 @@ const GlobalHandlers = {
             //});
         }
     }
+};
+
+// ***********************************************************************
+//   LocalizationInterceptor
+//     used for localization of the skill
+// ***********************************************************************
+const LocalizationInterceptor = {
+    process(handlerInput) {
+        const localizationClient = i18n.use(sprintf).init({
+            lng: handlerInput.requestEnvelope.request.locale,
+            fallbackLng: 'en', // fallback to EN if locale doesn't exist
+            resources: languageStrings
+        });
+
+        localizationClient.localize = function () {
+            const args = arguments;
+            let values = [];
+
+            for (var i = 1; i < args.length; i++) {
+                values.push(args[i]);
+            }
+            const value = i18n.t(args[0], {
+                returnObjects: true,
+                postProcess: 'sprintf',
+                sprintf: values
+            });
+
+            if (Array.isArray(value)) {
+                return value[Math.floor(Math.random() * value.length)];
+            } else {
+                return value;
+            }
+        }
+
+        const attributes = handlerInput.attributesManager.getRequestAttributes();
+        attributes.t = function (...args) { // pass on arguments to the localizationClient
+            return localizationClient.localize(...args);
+        };
+    },
 };

@@ -50,11 +50,7 @@ const ROLL_CALL_ANIMATIONS = {
     }
 };
 
-// Define two recognizers that will capture the first time each of two arbitrary buttons is pressed. 
-//  We'll use proxies to refer to the two different buttons because we don't know ahead of time 
-//  which two buttons will be used (see: https://developer.amazon.com/docs/gadget-skills/define-echo-button-events.html#proxies)
-// The two recogniziers will be used as triggers for two input handler events, used during roll call. 
-// see: https://developer.amazon.com/docs/gadget-skills/define-echo-button-events.html#recognizers
+// Only one button is required so we will make one button recognizer object
 const ROLL_CALL_RECOGNIZERS = {
     "roll_call_first_button_recognizer": {
         "type": "match",
@@ -65,20 +61,6 @@ const ROLL_CALL_RECOGNIZERS = {
                 "action": "down"
             }
         ]
-    },
-    "roll_call_second_button_recognizer": {
-        "type": "match",
-        "fuzzy": true,
-        "anchor": "end",
-        "pattern": [
-            {
-                "gadgetIds": [ "first_button" ],
-                "action": "down"
-            },
-            {
-                "gadgetIds": [ "second_button" ],
-                "action": "down"
-            }]
     }
 };
 
@@ -87,16 +69,10 @@ const ROLL_CALL_RECOGNIZERS = {
 // as well as then the input handler times out, if this happens before two buttons checked in. 
 // see: https://developer.amazon.com/docs/gadget-skills/define-echo-button-events.html#define
 const ROLL_CALL_EVENTS = {
-    "first_button_checked_in": {
+    "button_checked_in": {
         "meets": ["roll_call_first_button_recognizer"],
         "reports": "matches",
         "shouldEndInputHandler": false,
-        "maximumInvocations": 1
-    },
-    "second_button_checked_in": {
-        "meets": ["roll_call_second_button_recognizer"],
-        "reports": "matches",
-        "shouldEndInputHandler": true,
         "maximumInvocations": 1
     },
     "timeout": {
@@ -114,27 +90,19 @@ const ROLL_CALL_EVENTS = {
 const RollCall = {
     NewSession: function(handlerInput) {
         console.log("RollCall::NewSession");
-        
+
         const ctx = handlerInput.attributesManager.getRequestAttributes();
-
          // setup the output speech that Alexa should speak when roll call is stared, 
-         // after the skill is first launched 
-         ctx.outputSpeech = ["Welcome to the Color Changer skill."];
-         ctx.outputSpeech.push("This skill provides a brief introduction to the core");
-         ctx.outputSpeech.push("functionality that every Echo Button skill should have.");
-         ctx.outputSpeech.push("We'll cover roll call, starting and stopping the Input Handler,");
-         ctx.outputSpeech.push("button events and Input Handler timeout events. ");
-         ctx.outputSpeech.push("Let's get started with roll call. ");
-         ctx.outputSpeech.push("Roll call wakes up the buttons to make sure");
-         ctx.outputSpeech.push("they're connected and ready for play. ");
-         ctx.outputSpeech.push("Ok. Press the first button and wait for confirmation");
-         ctx.outputSpeech.push("before pressing the second button.");        
-         ctx.outputSpeech.push(Settings.WAITING_AUDIO);
+         // after the skill is first launched
+        ctx.outputSpeech = ["Welcome to " + ctx.t('SKILL_NAME') + "."];
+        ctx.outputSpeech.push("Let's get started. ");
+        ctx.outputSpeech.push("Press the button you want to use for this game and wait for confirmation");
+        ctx.outputSpeech.push(Settings.WAITING_AUDIO);
 
-         ctx.timeout = 50000;
-         
-         ctx.openMicrophone = true;
-         return RollCall.StartRollCall(handlerInput);
+        ctx.timeout = 50000;
+
+        ctx.openMicrophone = true;
+        return RollCall.StartRollCall(handlerInput);
     },
     StartRollCall: function(handlerInput) {
         console.log("RollCall::StartRollCall");
@@ -146,7 +114,7 @@ const RollCall = {
         // add a StartInputHandler directive using the ROLL_CALL recognizers and events
         ctx.directives.push(GadgetDirectives.startInputHandler({ 
             'timeout': ctx.timeout, 
-            'proxies': ['first_button', 'second_button'],
+            'proxies': ['first_button'],
             'recognizers': ROLL_CALL_RECOGNIZERS, 
             'events': ROLL_CALL_EVENTS 
         }));
@@ -156,7 +124,6 @@ const RollCall = {
             ROLL_CALL_ANIMATIONS.ButtonCheckInUp));   
  
         // start keeping track of some state
-        // see: https://developer.amazon.com/docs/gadget-skills/save-state-echo-button-skill.html
         sessionAttributes.buttonCount = 0;
         sessionAttributes.isRollCallComplete = false;
         sessionAttributes.expectingEndSkillConfirmation = false;
@@ -168,10 +135,10 @@ const RollCall = {
  
         ctx.openMicrophone = false;
         return handlerInput.responseBuilder.getResponse();
-    },     
-     
-    HandleFirstButtonCheckIn: function(handlerInput) {
-        console.log("RollCall::InputHandlerEvent::first_button_checked_in");
+    },
+
+    HandleButtonCheckIn: function(handlerInput) {
+        console.log("RollCall::InputHandlerEvent:: button_checked_in");
         const {attributesManager} = handlerInput;
         const ctx = attributesManager.getRequestAttributes();
         const sessionAttributes = attributesManager.getSessionAttributes();
@@ -193,60 +160,38 @@ const RollCall = {
             sessionAttributes.DeviceIDs[1] = fistButtonId;
             sessionAttributes.buttonCount = 1;
         }
-         
-        ctx.openMicrophone = false;
-        return handlerInput.responseBuilder.getResponse();
-    },    
-    HandleSecondButtonCheckIn: function(handlerInput) {
-        console.log("RollCall::InputHandlerEvent::second_button_checked_in");
-        const {attributesManager} = handlerInput;
-        const ctx = attributesManager.getRequestAttributes();
-        const sessionAttributes = attributesManager.getSessionAttributes();
-        const gameInputEvents = ctx.gameInputEvents;
-        console.log("RollCall::InputHandlerEvent::second_button_checked_in");
-        
-        ctx.reprompt = ["Please pick a color: green, red, or blue"];
+
+
+        //setting up the game variables
+        sessionAttributes.game = Settings.GAME;
+        sessionAttributes.characterProperties = [
+            {'name': ctx.t('CHARACTER_ONE'), 'color': ctx.t('CHARACTER_ONE_COLOR')},
+            {'name': ctx.t('CHARACTER_TWO'), 'color': ctx.t('CHARACTER_TWO_COLOR')},
+            {'name': ctx.t('CHARACTER_THREE'), 'color': ctx.t('CHARACTER_THREE_COLOR')},
+            {'name': ctx.t('CHARACTER_FOUR'), 'color': ctx.t('CHARACTER_FOUR_COLOR')}
+        ];
+        sessionAttributes.chosenCharacters = [];
+
+        ctx.reprompt = ["How many players will be playing the game? Please give a number between one and four."];
         ctx.outputSpeech = [];
+        ctx.outputSpeech.push("Awesome. I've registered your button! We're almost ready to play.");
+        ctx.outputSpeech.push("Now let's add players to the game.");
+        ctx.outputSpeech.push("How many players are there?");
 
-        if (sessionAttributes.buttonCount == 0) {
-            // just got both buttons at the same time
-            ctx.outputSpeech.push("hello buttons 1 and 2");
-            ctx.outputSpeech.push("<break time='1s'/>");
-            ctx.outputSpeech.push("Awesome!");
-
-            sessionAttributes.DeviceIDs[1] = gameInputEvents[0].gadgetId;
-            sessionAttributes.DeviceIDs[2] = gameInputEvents[1].gadgetId;
-
-        } else {
-            // already had button 1, just got button 2..
-            ctx.outputSpeech.push("hello, button 2");
-            ctx.outputSpeech.push("<break time='1s'/>");
-            ctx.outputSpeech.push("Awesome. I've registered two buttons.");
-
-            if (sessionAttributes.DeviceIDs.indexOf(gameInputEvents[0].gadgetId) === -1) {
-                sessionAttributes.DeviceIDs[2] = gameInputEvents[0].gadgetId;
-            } else {
-                sessionAttributes.DeviceIDs[2] = gameInputEvents[1].gadgetId;
-            }                        
-        }
-        sessionAttributes.buttonCount = 2;
-        
-        // .. and ask use to pick a color for the next stage of the skill 
-        ctx.outputSpeech.push("Now let's learn about button events.");
-        ctx.outputSpeech.push("Please select one of the following colors: red, blue, or green.");                                  
-            
         let deviceIds = sessionAttributes.DeviceIDs;
-        deviceIds = deviceIds.slice(-2);
+        deviceIds = deviceIds.slice(-1);
 
+        //TODO: update the animations
         // send an idle animation to registered buttons
         ctx.directives.push(GadgetDirectives.setIdleAnimation(
             ROLL_CALL_ANIMATIONS.RollCallComplete, { 'targetGadgets': deviceIds } ));
+
         // reset button press animations until the user chooses a color
         ctx.directives.push(GadgetDirectives.setButtonDownAnimation(
             Settings.DEFAULT_ANIMATIONS.ButtonDown));
         ctx.directives.push(GadgetDirectives.setButtonUpAnimation(
             Settings.DEFAULT_ANIMATIONS.ButtonUp));
-    
+
         sessionAttributes.isRollCallComplete = true;
         sessionAttributes.state = Settings.SKILL_STATES.PLAY_MODE;
 
@@ -259,12 +204,12 @@ const RollCall = {
         const ctx = attributesManager.getRequestAttributes();
         const sessionAttributes = attributesManager.getSessionAttributes();        
 
-        ctx.outputSpeech = ["For this skill we need two buttons."];
-        ctx.outputSpeech.push("Would you like more time to press the buttons?");
-        ctx.reprompt = ["Say yes to go back and add buttons, or no to exit now."];
+        ctx.outputSpeech = ["For this skill we need a button."];
+        ctx.outputSpeech.push("Would you like more time to press the button?");
+        ctx.reprompt = ["Say yes to go back and add your button, or no to exit now."];
  
         let deviceIds = sessionAttributes.DeviceIDs;
-        deviceIds = deviceIds.slice(-2);
+        deviceIds = deviceIds.slice(-1);
  
         ctx.directives.push(GadgetDirectives.setIdleAnimation(
             ROLL_CALL_ANIMATIONS.Timeout, { 'targetGadgets': deviceIds } ));                    
