@@ -7,7 +7,7 @@ module.exports = {
             'Hi!'
         ],
         'WELCOME_MESSAGE': [
-
+            '%s, Welcome to %s.'
         ],
         'WELCOME_BACK_MESSAGE': [
 
@@ -28,7 +28,7 @@ module.exports = {
         'CHARACTER_TWO': 'star-nosed mole',
         'CHARACTER_THREE': 'fried-egg jellyfish',
         'CHARACTER_FOUR': 'furry potato',
-        'CHARACTER_ONE_COLOR': 'black',
+        'CHARACTER_ONE_COLOR': 'green',
         'CHARACTER_TWO_COLOR': 'orange',
         'CHARACTER_THREE_COLOR': 'blue',
         'CHARACTER_FOUR_COLOR': 'purple',

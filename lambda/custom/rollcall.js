@@ -94,9 +94,9 @@ const RollCall = {
         const ctx = handlerInput.attributesManager.getRequestAttributes();
          // setup the output speech that Alexa should speak when roll call is stared, 
          // after the skill is first launched
-        ctx.outputSpeech = ["Welcome to " + ctx.t('SKILL_NAME') + "."];
+        ctx.outputSpeech = [ctx.t('WELCOME_MESSAGE', ctx.t('GREETING'), ctx.t('SKILL_NAME'))];
         ctx.outputSpeech.push("Let's get started. ");
-        ctx.outputSpeech.push("Press the button you want to use for this game and wait for confirmation");
+        ctx.outputSpeech.push("Press the button you want to use for this game.");
         ctx.outputSpeech.push(Settings.WAITING_AUDIO);
 
         ctx.timeout = 50000;
@@ -193,7 +193,7 @@ const RollCall = {
             Settings.DEFAULT_ANIMATIONS.ButtonUp));
 
         sessionAttributes.isRollCallComplete = true;
-        sessionAttributes.state = Settings.SKILL_STATES.PLAY_MODE;
+        sessionAttributes.state = Settings.SKILL_STATES.PLAYER_COUNT_MODE;
 
         ctx.openMicrophone = true;
         return handlerInput.responseBuilder.getResponse();

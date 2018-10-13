@@ -157,19 +157,7 @@ const GamePlay = {
             let deviceIds = sessionAttributes.DeviceIDs;
             sessionAttributes.game.playerCount = numberPlayers;
 
-            //deviceIds = deviceIds.slice(-1);
-            //TODO: handle animations at this point
-            // ctx.directives.push(GadgetDirectives.setButtonDownAnimation({
-            //     'targetGadgets': deviceIds,
-            //     'animations': BasicAnimations.SolidAnimation(1, "red", 2000)
-            // } ));
-            //
-            // // build 'button up' animation, based on the users color of choice, for when the button is released
-            // ctx.directives.push(GadgetDirectives.setButtonUpAnimation({
-            //     'targetGadgets': deviceIds,
-            //     'animations': BasicAnimations.SolidAnimation(1, "red", 200)
-            // } ));
-
+            //TODO add animations for adding players
 
             console.log('**list ', sessionAttributes.characterProperties);
             let availableCharacters = sessionAttributes.characterProperties.reduce(function(acc, list_item) {
@@ -179,7 +167,7 @@ const GamePlay = {
                 if(index === list.length-1){
                     accumulator = accumulator + ", and " + name;
                 }else if(index == 0){
-                    accumulator = accumulator + name + ", ";
+                    accumulator = accumulator + name;
                 }else{
                     accumulator = accumulator + ", " + name;
                 }
@@ -189,9 +177,10 @@ const GamePlay = {
 
             ctx.outputSpeech = ["Ok. " + numberPlayers + " players it is."];
             ctx.outputSpeech.push("Now each player can choose a character.");
-            ctx.outputSpeech.push("The character you can choose from are: "+availableCharacters+".");
+            ctx.outputSpeech.push("The characters you can choose from are: "+availableCharacters+".");
             ctx.outputSpeech.push("Player 1, what character do you want?");
             ctx.outputSpeech.push(Settings.WAITING_AUDIO);
+            sessionAttributes.state = Settings.SKILL_STATES.CHOOSE_CHARACTER_MODE;
 
             ctx.openMicrophone = false;
             return handlerInput.responseBuilder.getResponse();
@@ -204,14 +193,26 @@ const GamePlay = {
         const sessionAttributes = attributesManager.getSessionAttributes();
         const { request } = handlerInput.requestEnvelope;
 
-        let gameCharacter = request.intent.slots.gameCharacter.value;
+        let gameCharacterSlot = request.intent.slots.gameCharacter;
+        let gameCharacter = undefined;
+        console.log("** resolutionsPerAuthority", gameCharacterSlot);
+        if (gameCharacterSlot.confirmationStatus !== 'CONFIRMED' && gameCharacterSlot.resolutions && gameCharacterSlot.resolutions.resolutionsPerAuthority[0]) {
+                if (gameCharacterSlot.resolutions.resolutionsPerAuthority[0].status.code == 'ER_SUCCESS_MATCH') {
+                    gameCharacter = gameCharacterSlot.resolutions.resolutionsPerAuthority[0].values[0].value.name;
+                }
+        }
+        console.log("** gameCharacter", gameCharacter);
+        //todo set if character is already in chosen sessionAttributes.chosenCharacters
+        let is_already_chosen = sessionAttributes.chosenCharacters.some(function(name){
+            return name === gameCharacter;
+        });
 
         if (gameCharacter === undefined) {
-            ctx.reprompt = ["Please give me the numb"];
+            ctx.reprompt = ["Please give me the name of the character you would like to be again."];
             ctx.outputSpeech = ["Sorry, I didn't get that. " + ctx.reprompt[0]];
             ctx.openMicrophone = false;
             return handlerInput.responseBuilder.getResponse();
-        }else if(gameCharacter in sessionAttributes.chosenCharacters){
+        }else if(is_already_chosen){
             ctx.reprompt = ["Choose another character."];
             ctx.outputSpeech = ["Sorry, that character has already been picked by a player. " + ctx.reprompt[0]];
             ctx.openMicrophone = false;
@@ -220,8 +221,10 @@ const GamePlay = {
             let deviceIds = sessionAttributes.DeviceIDs;
             //set the players character and get the next character counts
             let currentPlayer = sessionAttributes.game.currentPlayer;
+            let nextPlayer = currentPlayer + 1;
             let currentPlayerKey = "player"+currentPlayer;
-            sessionAttributes.game.currentPlayer = sessionAttributes.game.currentPlayer+1;
+            //next current player
+            sessionAttributes.game.currentPlayer = nextPlayer;
             sessionAttributes.game.playerCharacter[currentPlayerKey] = gameCharacter;
 
             //adding character so no one else can choose in future
@@ -229,14 +232,12 @@ const GamePlay = {
 
             deviceIds = deviceIds.slice(-1);
 
-            //TODO get color animations
             //get the color of the character
             let characterColor = sessionAttributes.characterProperties.find(function (item) {
-                return item.name == gameCharacter;
+                return item.name === gameCharacter;
             });
-            console.log('characterColor', characterColor);
+            console.log("** color", characterColor);
             characterColor = characterColor.color;
-            console.log('characterColor', characterColor);
 
             // Save Input Handler Request ID
             sessionAttributes.CurrentInputHandlerID = request.requestId;
@@ -248,17 +249,26 @@ const GamePlay = {
                 'animations': BasicAnimations.SolidAnimation(1, characterColor, 2000)
             } ));
 
-
-            //TODO get list of remaining
             let chosenCharacters = sessionAttributes.chosenCharacters;
-            let availableCharacters = sessionAttributes.characterProperties.reduce(function(list, list_item) {
+            let charactersList = sessionAttributes.characterProperties.reduce(function(list, list_item) {
                     list.push(list_item.name);
                     return list;
                 }, []
-            ).filter(function(name) {
+            );
+
+            console.log('** character list', charactersList);
+            //add items that are not in the chosen character list
+            //todo this isn't returning a list of remaining characters
+            let availableCharacters = charactersList.filter(function(name) {
+                //return items that are not in the chosenCharacter list
                 return  chosenCharacters.indexOf(name) === -1;
-            }).reduce(function(accumulator, name, index, list){
-                if(index === list.length-1){
+            });
+            console.log('** availableCharacters list', availableCharacters);
+
+            let availableCharactersString = availableCharacters.reduce(function(accumulator, name, index, list){
+                if(list.length === 1){
+                    return accumulator+name;
+                }else if(index === list.length-1 && list.length !== 1){
                     accumulator = accumulator + ", and " + name;
                 }else if(index == 0){
                     accumulator = accumulator + name;
@@ -268,12 +278,23 @@ const GamePlay = {
                 return accumulator;
             }, "");
 
-            ctx.outputSpeech = ["Got it player " + currentPlayer + ". You are the "+gameCharacter+"."];
-            ctx.outputSpeech.push("The characters remaining are. "+availableCharacters+".");
-            ctx.outputSpeech.push("Player "+sessionAttributes.game.currentPlayer+", which character would you like?");
+            ctx.openMicrophone = false;
+            ctx.outputSpeech = ["Got it player " + currentPlayer + ", You are the "+gameCharacter+". Your color will be "+characterColor+"."];
+            if(sessionAttributes.chosenCharacters.length === 3){
+                ctx.outputSpeech.push("Sorry player four, you are stuck with: the "+availableCharactersString+". Your color will be "+characterColor+".");
+                //TODO add animation color for the last player
+            }
+
+            if(sessionAttributes.game.playerCount == currentPlayer){
+                ctx.outputSpeech.push("All players have characters now!");
+                sessionAttributes.state = Settings.SKILL_STATES.PLAY_MODE;
+                return handlerInput.responseBuilder.getResponse();
+            }
+
+            ctx.outputSpeech.push("The characters remaining are: "+availableCharactersString+".");
+            ctx.outputSpeech.push("Player "+nextPlayer+", which character would you like?");
             ctx.outputSpeech.push(Settings.WAITING_AUDIO);
 
-            ctx.openMicrophone = false;
             return handlerInput.responseBuilder.getResponse();
         }
     },

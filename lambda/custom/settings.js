@@ -26,6 +26,8 @@ module.exports = {
         // Roll Call mode performs roll call and button registration.
         // https://developer.amazon.com/docs/gadget-skills/discover-echo-buttons.html
         ROLL_CALL_MODE: '',
+        CHOOSE_CHARACTER_MODE: '_CHOOSE_CHARACTER_MODE',
+        PLAYER_COUNT_MODE: '_PLAYER_COUNT_MODE',
         PLAY_MODE: '_PLAY_MODE',
         // Exit mode performs the actions described in
         // https://developer.amazon.com/docs/gadget-skills/exit-echo-button-skill.html
@@ -38,11 +40,8 @@ module.exports = {
 
     // We'll set up a map of custom colors to each of the three allowed colord: blue, green and red
     BREATH_CUSTOM_COLORS: { 
-        // map the 'blue' selection to a very light blue color to show as a pulsating animation, while waiting for button presses
         'blue': '184066',
-        // map the 'green' selection to a very light blue color to show as a pulsating animation, while waiting for button presses
         'green': '184518',
-        // map the 'red' selection to a very light blue color to show as a pulsating animation, while waiting for button presses
         'red': '603018',
         'black': '000000',
         'orange': 'e67e22',
@@ -84,6 +83,6 @@ module.exports = {
         },
         'characterRollCounter': 0,
         'round': 1,
-        'currentPlayer': 0
+        'currentPlayer': 1
     }
 };

@@ -297,16 +297,17 @@ const GlobalHandlers = {
             return true;
         },
         handle(handlerInput) {            
-            console.log("Global.DefaultHandler: handling request");
-            if (handlerInput.requestEnvelope.request.type === 'IntentRequest'
-                && handlerInput.requestEnvelope.request.intent.name === 'addPlayersIntent') {
-                return GamePlay.AddPlayersIntentHandler(handlerInput);
-            }
-
+            console.log("Global.DefaultHandler: handling request. In default handler");
             if (handlerInput.requestEnvelope.request.type === 'IntentRequest'
                 && handlerInput.requestEnvelope.request.intent.name === 'chooseCharacterIntent') {
                 return GamePlay.ChooseCharacterIntentHandler(handlerInput);
             }
+            else if (handlerInput.requestEnvelope.request.type === 'IntentRequest'
+                && handlerInput.requestEnvelope.request.intent.name === 'addPlayersIntent') {
+                return GamePlay.AddPlayersIntentHandler(handlerInput);
+            }
+
+
 
             const ctx = handlerInput.attributesManager.getRequestAttributes();
  
