@@ -25,7 +25,7 @@ module.exports = {
     SKILL_STATES: {
         // Roll Call mode performs roll call and button registration.
         // https://developer.amazon.com/docs/gadget-skills/discover-echo-buttons.html
-        ROLL_CALL_MODE: '',
+        ROLL_CALL_MODE: '_ROLL_CALL_MODE',
         CHOOSE_CHARACTER_MODE: '_CHOOSE_CHARACTER_MODE',
         PLAYER_COUNT_MODE: '_PLAYER_COUNT_MODE',
         PLAY_MODE: '_PLAY_MODE',

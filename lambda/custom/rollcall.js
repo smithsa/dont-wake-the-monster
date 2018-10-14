@@ -40,8 +40,8 @@ const ROLL_CALL_ANIMATIONS = {
         'targetGadgets': [],
         'animations': BasicAnimations.SolidAnimation(1, "green", 1000)
     },
-    'ButtonCheckInUp': {                     
-        'targetGadgets': [], 
+    'ButtonCheckInUp': {
+        'targetGadgets': [],
         'animations': BasicAnimations.SolidAnimation(1, "white", 4000)
     },
     'Timeout': {
@@ -95,8 +95,7 @@ const RollCall = {
          // setup the output speech that Alexa should speak when roll call is stared, 
          // after the skill is first launched
         ctx.outputSpeech = [ctx.t('WELCOME_MESSAGE', ctx.t('GREETING'), ctx.t('SKILL_NAME'))];
-        ctx.outputSpeech.push("Let's get started. ");
-        ctx.outputSpeech.push("Press the button you want to use for this game.");
+        ctx.outputSpeech.push(ctx.t('ROLL_CALL_INSTRUCTION'));
         ctx.outputSpeech.push(Settings.WAITING_AUDIO);
 
         ctx.timeout = 50000;
@@ -124,6 +123,7 @@ const RollCall = {
             ROLL_CALL_ANIMATIONS.ButtonCheckInUp));   
  
         // start keeping track of some state
+        sessionAttributes.state = Settings.SKILL_STATES.ROLL_CALL_MODE;
         sessionAttributes.buttonCount = 0;
         sessionAttributes.isRollCallComplete = false;
         sessionAttributes.expectingEndSkillConfirmation = false;
@@ -150,12 +150,9 @@ const RollCall = {
         //   if not, we will silently ignore the event
         if (sessionAttributes.buttonCount === 0) {                        
             // Say something when we first encounter a button
-            ctx.outputSpeech = ['Hello, button 1.'];
-            ctx.outputSpeech.push(Settings.WAITING_AUDIO);
+            ctx.outputSpeech = [ctx.t('BUTTON_IS_REGISTERED')];
 
             let fistButtonId = ctx.gameInputEvents[0].gadgetId;
-            ctx.directives.push(GadgetDirectives.setIdleAnimation(
-                ROLL_CALL_ANIMATIONS.ButtonCheckInIdle, { 'targetGadgets': [fistButtonId] } ));
             
             sessionAttributes.DeviceIDs[1] = fistButtonId;
             sessionAttributes.buttonCount = 1;
@@ -172,57 +169,19 @@ const RollCall = {
         ];
         sessionAttributes.chosenCharacters = [];
 
-        ctx.reprompt = ["How many players will be playing the game? Please give a number between one and four."];
+        ctx.reprompt = [ctx.t('NUM_PLAYERS_REPROMPT')];
         ctx.outputSpeech = [];
-        ctx.outputSpeech.push("Awesome. I've registered your button! We're almost ready to play.");
-        ctx.outputSpeech.push("Now let's add players to the game.");
-        ctx.outputSpeech.push("How many players are there?");
+        ctx.outputSpeech.push(ctx.t('ROLL_CALL_CONFIRMATION'));
+        ctx.outputSpeech.push(ctx.reprompt[0]);
+        //ctx.outputSpeech.push(Settings.WAITING_AUDIO);
 
-        let deviceIds = sessionAttributes.DeviceIDs;
-        deviceIds = deviceIds.slice(-1);
-
-        //TODO: update the animations
-        // send an idle animation to registered buttons
-        ctx.directives.push(GadgetDirectives.setIdleAnimation(
-            ROLL_CALL_ANIMATIONS.RollCallComplete, { 'targetGadgets': deviceIds } ));
-
-        // reset button press animations until the user chooses a color
-        ctx.directives.push(GadgetDirectives.setButtonDownAnimation(
-            Settings.DEFAULT_ANIMATIONS.ButtonDown));
-        ctx.directives.push(GadgetDirectives.setButtonUpAnimation(
-            Settings.DEFAULT_ANIMATIONS.ButtonUp));
 
         sessionAttributes.isRollCallComplete = true;
         sessionAttributes.state = Settings.SKILL_STATES.PLAYER_COUNT_MODE;
 
         ctx.openMicrophone = true;
         return handlerInput.responseBuilder.getResponse();
-    },
-    HandleTimeout: function(handlerInput) {
-        console.log("rollCallModeIntentHandlers::InputHandlerEvent::timeout");
-        const {attributesManager} = handlerInput;
-        const ctx = attributesManager.getRequestAttributes();
-        const sessionAttributes = attributesManager.getSessionAttributes();        
-
-        ctx.outputSpeech = ["For this skill we need a button."];
-        ctx.outputSpeech.push("Would you like more time to press the button?");
-        ctx.reprompt = ["Say yes to go back and add your button, or no to exit now."];
- 
-        let deviceIds = sessionAttributes.DeviceIDs;
-        deviceIds = deviceIds.slice(-1);
- 
-        ctx.directives.push(GadgetDirectives.setIdleAnimation(
-            ROLL_CALL_ANIMATIONS.Timeout, { 'targetGadgets': deviceIds } ));                    
-        ctx.directives.push(GadgetDirectives.setButtonDownAnimation(
-            Settings.DEFAULT_ANIMATIONS.ButtonDown, { 'targetGadgets': deviceIds } ));
-        ctx.directives.push(GadgetDirectives.setButtonUpAnimation(
-            Settings.DEFAULT_ANIMATIONS.ButtonUp, { 'targetGadgets': deviceIds } ));
-
-        sessionAttributes.expectingEndSkillConfirmation = true;
-
-        ctx.openMicrophone = true;
-        return handlerInput.responseBuilder.getResponse();
-    }  
+    }
 };
 
 module.exports = RollCall;

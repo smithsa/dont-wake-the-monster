@@ -18,6 +18,8 @@
 const Alexa = require('ask-sdk-core');
 // Gadget Directives Builder
 const GadgetDirectives = require('util/gadgetDirectives.js');
+//helper functions
+const HelperFunctions = require('util/helper.js');
 // Basic Animation Helper Library
 const BasicAnimations = require('button_animations/basicAnimations.js');
 // import the skill settings constants 
@@ -30,10 +32,37 @@ const GamePlay = require('gameplay.js');
 const i18n = require('i18next');
 const sprintf = require('i18next-sprintf-postprocessor');
 
+//DynamoDb Memory Persistence
+const { DynamoDbPersistenceAdapter } = require('ask-sdk-dynamodb-persistence-adapter');
+const dynamoDbPersistenceAdapter = new DynamoDbPersistenceAdapter({ tableName : 'dont_wake_the_monster_session_data', createTable: true });
+
 const languageStrings = {
     'en' : require('./i18n/en'),
     'de' : require('./i18n/de')
 }
+
+const ROLL_CALL_ANIMATIONS = {
+    'RollCallComplete': {
+        'targetGadgets': [],
+        'animations': BasicAnimations.FadeInAnimation(1, "green", 5000)
+    },
+    'ButtonCheckInIdle': {
+        'targetGadgets': [],
+        'animations': BasicAnimations.SolidAnimation(1, "green", 8000)
+    },
+    'ButtonCheckInDown' : {
+        'targetGadgets': [],
+        'animations': BasicAnimations.SolidAnimation(1, "green", 1000)
+    },
+    'ButtonCheckInUp': {
+        'targetGadgets': [],
+        'animations': BasicAnimations.SolidAnimation(1, "white", 4000)
+    },
+    'Timeout': {
+        'targetGadgets': [],
+        'animations': BasicAnimations.FadeAnimation("black", 1000)
+    }
+};
 
 let skill;
  
@@ -53,6 +82,7 @@ exports.handler = function (event, context) {
              GlobalHandlers.SessionEndedRequestHandler,
              GlobalHandlers.DefaultHandler
          )
+         .withPersistenceAdapter(dynamoDbPersistenceAdapter)
          .addRequestInterceptors(LocalizationInterceptor)
          .addRequestInterceptors(GlobalHandlers.RequestInterceptor)
          .addResponseInterceptors(GlobalHandlers.ResponseInterceptor)
@@ -60,8 +90,6 @@ exports.handler = function (event, context) {
          .create();
      }
 
-     // TODO: show example of setting up DynamoDB persistance using new Alexa SDK v2
- 
      return skill.invoke(event,context);
  }
 
@@ -123,22 +151,25 @@ const GlobalHandlers = {
 
             let reprompt = "", 
                 outputSpeech = "";
+
+            //TODO add help instruction for game
+            //TODO add help instruction for player count
+            //TODO add help instruction for choosing character
             if (sessionAttributes.isRollCallComplete === true) {
                 // roll call is complete
                 ctx.reprompt = ["Pick a color to test your buttons: red, blue, or green. "];
-                ctx.reprompt.push(" Or say cancel or exit to quit. ");
+                ctx.reprompt.push(ctx.t('EXIT_HELP_INSTRUCTION'));
 
-                ctx.outputSpeech = ["Now that you have registered two buttons, "];
-                ctx.outputSpeech.push("you can pick a color to show when the buttons are pressed. ");
-                ctx.outputSpeech.push("Select one of the following colors: red, blue, or green. ");                
+                ctx.outputSpeech = ["Now that you have registered a button, "];
+                ctx.outputSpeech.push("Tell me how many players there are. ");
+                ctx.outputSpeech.push("Up to four players can play this game. ");
                 ctx.outputSpeech.push("If you do not wish to continue, you can say exit. ");                
-            } else {            
+            } else if(sessionAttributes.isRollCallComplete === false) {
                 // the user hasn't yet completed roll call
-                ctx.reprompt = ["You can say yes to continue, or no or exit to quit."];
-                ctx.outputSpeech = ["You will need two Echo buttons to to use this skill. "];
-                ctx.outputSpeech.push("Each of the two buttons you plan to use ");
-                ctx.outputSpeech.push("must be pressed for the skill to register them. ");
-                ctx.outputSpeech.push("Would you like to continue and register two Echo buttons? ");
+                ctx.reprompt = [ctx.t('HELP_ROLL_CALL_INCOMPLETE_REPROMPT')];
+                ctx.outputSpeech = [ctx.t('HELP_ROLL_CALL_INCOMPLETE_1')];
+                ctx.outputSpeech.push(ctx.t('HELP_ROLL_CALL_INCOMPLETE_2'));
+                ctx.outputSpeech.push(ctx.t('HELP_ROLL_CALL_INCOMPLETE_3'));
                                 
                 sessionAttributes.expectingEndSkillConfirmation = true;
             }  
@@ -202,12 +233,8 @@ const GlobalHandlers = {
                             return GamePlay.HandleButtonStepped(handlerInput);
                         }
                         break;
-                    case 'timeout':                        
-                        if (sessionAttributes.state == Settings.SKILL_STATES.PLAY_MODE) {
-                            return GamePlay.HandleTimeout(handlerInput);
-                        } else {
-                            RollCall.HandleTimeout(handlerInput);
-                        }
+                    case 'timeout':
+                        return GlobalHandlers.HandleTimeout(handlerInput);
                         break;
                 }
             }
@@ -230,11 +257,15 @@ const GlobalHandlers = {
             const ctx = attributesManager.getRequestAttributes();
             const state = sessionAttributes.state || '';
             // ---- Hanlde "Yes" when we're in the context of Roll Call ...
-            if (state === Settings.SKILL_STATES.ROLL_CALL_MODE 
+            //TODO add second thought for game_state of playing game
+            //TODO add second thought for game_state of getting player count
+            //TODO add second thought for game_state of choosing character
+            //TODO add second thought for game_state of playing have accounted for a repsonse and action
+            //TOOD for all places where user says yes make sure I
+            if (state === Settings.SKILL_STATES.ROLL_CALL_MODE
                 && sessionAttributes.expectingEndSkillConfirmation === true) {
                 // pass control to the StartRollCall event handler to restart the rollcall process
-                ctx.outputSpeech = ["Ok. Press the first button, wait for confirmation,"];
-                ctx.outputSpeech.push("then press the second button.");
+                ctx.outputSpeech = [ctx.t('SECOND_THOUGHT_REGISTER_BUTTON')];
                 ctx.outputSpeech.push(Settings.WAITING_AUDIO);
                 ctx.timeout = 30000;
                 return RollCall.StartRollCall(handlerInput);
@@ -265,13 +296,18 @@ const GlobalHandlers = {
             const sessionAttributes = attributesManager.getSessionAttributes();
             const ctx = attributesManager.getRequestAttributes();
             const state = sessionAttributes.state || '';
-            
+
+            //TODO add second thought for game_state of playing game
+            //TODO add second thought for game_state of getting player count
+            //TODO add second thought for game_state of choosing character
+            //TODO add second thought for game_state of playing have accounted for a repsonse and action
             // ---- Hanlde "No" when we're in the context of Roll Call ...
             if (state === Settings.SKILL_STATES.ROLL_CALL_MODE 
                 && sessionAttributes.expectingEndSkillConfirmation === true) {
                 // if user says No when prompted whether they will to continue with rollcall then just exit
                 return GlobalHandlers.StopIntentHandler.handle(handlerInput);
-            } if (state === Settings.SKILL_STATES.EXIT_MODE 
+            } if (state === Settings.SKILL_STATES.EXIT_MODE
+                //TODO continue game here add message
                 && sessionAttributes.expectingEndSkillConfirmation === true) { 
                 ctx.reprompt = ["Pick a different color, red, blue, or green."];
                 ctx.outputSpeech = ["Ok, let's keep going."];
@@ -288,7 +324,57 @@ const GlobalHandlers = {
             }
         }
     },
-    DefaultHandler: {
+    HandleTimeout: function(handlerInput) {
+    console.log("rollCallModeIntentHandlers::InputHandlerEvent::timeout");
+    const {attributesManager} = handlerInput;
+    const ctx = attributesManager.getRequestAttributes();
+    const sessionAttributes = attributesManager.getSessionAttributes();
+    sessionAttributes.expectingEndSkillConfirmation = false;
+    ctx.openMicrophone = true;
+
+    if(sessionAttributes.state == Settings.SKILL_STATES.ROLL_CALL_MODE){
+        console.log('TIMEOUT:', 'ROLL_CALL_MODE');
+        ctx.outputSpeech = [ctx.t('TIMEOUT_ROLL_CALL')];
+        sessionAttributes.expectingEndSkillConfirmation = true;
+    }
+    else if(sessionAttributes.state == Settings.SKILL_STATES.PLAYER_COUNT_MODE){
+        console.log('TIMEOUT:', 'PLAYER_COUNT_MODE');
+        ctx.outputSpeech = [ctx.t('TIMEOUT_PLAYER_COUNT')];
+        ctx.shouldEndSession = true;
+    }
+    else if(sessionAttributes.state == Settings.SKILL_STATES.CHOOSE_CHARACTER_MODE){
+        let chosenCharacters = sessionAttributes.chosenCharacters;
+        let charactersList = sessionAttributes.characterProperties.reduce(function(list, list_item) {
+                list.push(list_item.name);
+                return list;
+            }, []
+        );
+        let availableCharactersStringBeforePick = HelperFunctions.getRemainingCharacterNames(chosenCharacters, charactersList);
+        console.log('TIMEOUT:', 'CHOOSE_CHARACTER_MODE');
+        ctx.outputSpeech = [ctx.t('TIMEOUT_CHOOSE_CHARACTER', availableCharactersStringBeforePick)];
+        ctx.shouldEndSession = true;
+    }
+    else if(sessionAttributes.state == Settings.SKILL_STATES.PLAY_MODE){
+        console.log('TIMEOUT:', 'PLAY_MODE');
+        ctx.outputSpeech = [ctx.t('TIMEOUT_PLAY_MODE')];
+    }else{//the quit mode
+        return GlobalHandlers.StopIntentHandler;
+    }
+
+
+    let deviceIds = sessionAttributes.DeviceIDs;
+    deviceIds = deviceIds.slice(-1);
+
+    ctx.directives.push(GadgetDirectives.setIdleAnimation(
+        ROLL_CALL_ANIMATIONS.Timeout, { 'targetGadgets': deviceIds } ));
+    ctx.directives.push(GadgetDirectives.setButtonDownAnimation(
+        Settings.DEFAULT_ANIMATIONS.ButtonDown, { 'targetGadgets': deviceIds } ));
+    ctx.directives.push(GadgetDirectives.setButtonUpAnimation(
+        Settings.DEFAULT_ANIMATIONS.ButtonUp, { 'targetGadgets': deviceIds } ));
+
+    return handlerInput.responseBuilder.getResponse();
+},
+DefaultHandler: {
         canHandle(handlerInput) {
             let { request } = handlerInput.requestEnvelope;
             let intentName = request.intent ? request.intent.name : '';
@@ -296,16 +382,23 @@ const GlobalHandlers = {
                 + request.type + " for " + intentName);
             return true;
         },
-        handle(handlerInput) {            
+        handle(handlerInput) {
+            //TODO return intents based on game mode
+            let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
             console.log("Global.DefaultHandler: handling request. In default handler");
             if (handlerInput.requestEnvelope.request.type === 'IntentRequest'
+                && handlerInput.requestEnvelope.request.intent.name === 'addPlayersIntent') {
+                if(sessionAttributes.state == Settings.SKILL_STATES.CHOOSE_CHARACTER_MODE){
+                    return GamePlay.ChooseCharacterIntentHandler(handlerInput);
+                }
+                return GamePlay.AddPlayersIntentHandler(handlerInput);
+            }
+            else if (handlerInput.requestEnvelope.request.type === 'IntentRequest'
                 && handlerInput.requestEnvelope.request.intent.name === 'chooseCharacterIntent') {
                 return GamePlay.ChooseCharacterIntentHandler(handlerInput);
             }
-            else if (handlerInput.requestEnvelope.request.type === 'IntentRequest'
-                && handlerInput.requestEnvelope.request.intent.name === 'addPlayersIntent') {
-                return GamePlay.AddPlayersIntentHandler(handlerInput);
-            }
+
+            //sessionAttributes.state == Settings.SKILL_STATES.PLAY_MODE
 
 
 
@@ -313,8 +406,8 @@ const GlobalHandlers = {
  
             // otherwise, try to let the user know that we couldn't understand the request 
             //  and prompt for what to do next
-            ctx.reprompt = ["Please say again, or say help if you're not sure what to do."];
-            ctx.outputSpeech = ["Sorry, I didn't get that. " + ctx.reprompt[0]];
+            ctx.reprompt = [ctx.t('HELP_PROMPT')];
+            ctx.outputSpeech = [ctx.t('HELP_SYMPATHY') + ctx.reprompt[0]];
             
             ctx.openMicrophone = true;        
             return handlerInput.responseBuilder.getResponse();
@@ -329,7 +422,7 @@ const GlobalHandlers = {
             let response = handlerInput.responseBuilder.getResponse();
             response.shouldEndSession = true;
             const ctx = handlerInput.attributesManager.getRequestAttributes();
-            ctx.outputSpeech = ["Good bye!"];            
+            ctx.outputSpeech = [ctx.t('EXIT_MESSAGE')];
             return handlerInput.responseBuilder.getResponse();
         },
     },

@@ -7,11 +7,61 @@ module.exports = {
             'Hi!'
         ],
         'WELCOME_MESSAGE': [
-            '%s, Welcome to %s.'
+            '%s, Welcome to %s. Let\'s get started.'
         ],
         'WELCOME_BACK_MESSAGE': [
 
         ],
+        'EXIT_HELP_INSTRUCTION': 'Or say cancel or exit to quit.',
+        'TIMEOUT_ROLL_CALL': 'For this skill you need a button. Would you like more time to press the button? Say yes to go back and add your button, or no to exit now.',
+        'TIMEOUT_PLAYER_COUNT': 'To play the game you will need to give me the number of players. Please tell me the number of players playing.',
+        'TIMEOUT_CHOOSE_CHARACTER': 'Please choose a character by saying the name of the character. The characters you can choose from are: %s.',
+        'TIMEOUT_PLAY_MODE': 'Move your character. You can press the button up to 5 times.',
+        'HELP_SYMPATHY': [
+            'Sorry, I didn\'t get that. ',
+            'Pardon me, I didn\'t get that. ',
+            'hmmmm, I didn\'t quite understand that. ',
+        ],
+        'HELP_PROMPT': 'Please say again, or say help if you\'re not sure what to do.',
+        'HELP_ROLL_CALL_INCOMPLETE_1': 'You will need one Echo button to to use this skill. ',
+        'HELP_ROLL_CALL_INCOMPLETE_2': 'The button you plan to use must be pressed for the skill to register it. ',
+        'HELP_ROLL_CALL_INCOMPLETE_3': 'Would you like to continue and register two Echo buttons? ',
+        'HELP_ROLL_CALL_INCOMPLETE_REPROMPT': 'You can say yes to continue, or no or exit to quit.',
+        'HELP_CHOOSE_CHARACTER': '',
+        'EXIT_MESSAGE': [
+            'Good bye!'
+        ],
+        'SECOND_THOUGHT_REGISTER_BUTTON': 'Ok. Press the button you would like to use for this game.',
+        'ROLL_CALL_INSTRUCTION': [
+            'Press the button you want to use for this game.'
+        ],
+        'ROLL_CALL_CONFIRMATION':[
+            'Awesome. I\'ve registered your button! We\'re almost ready to play.'
+        ],
+        'BUTTON_IS_REGISTERED':[
+            'Hello, button 1. Your button has been registered.'
+        ],
+        'NUM_PLAYERS_TOO_MANY_PLAYERS': 'Sorry, you have too many players. The maximum number of players is 4. ',
+        'NUM_PLAYERS_GIVE_NUMBER_AGAIN': 'Please give me the number of players again.',
+        'NUM_PLAYERS_REPROMPT':'How many players will be playing the game? Please give a number between one and four.',
+        'NUM_PLAYERS_PROMPT': [
+            'Now let\'s add players to the game. How many players are there?'
+        ],
+        'NUM_PLAYERS_ADDED_CONFIRMATION':'Ok. %s players it is.',
+        'CHOOSE_CHARACTER_INSTRUCTION_1':'Now each player can choose a character.',
+        'CHOOSE_CHARACTER_INSTRUCTION_2':'The characters you can choose from are: %s. ',
+        'CHOOSE_CHARACTER_INSTRUCTION_3':'Player 1, what character do you want?',
+        'CHOOSE_CHARACTER_UNDEFINED':'Please give me the name of the character you would like to be again. The characters you can choose from are: %s.',
+        'CHOOSE_CHARACTER_UNAVAILABLE':'Sorry, that character has already been picked by a player. ',
+        'CHOOSE_CHARACTER_UNAVAILABLE_REPROMPT':'Please, choose another character. The characters you can choose from are: %s.',
+        'CHOOSE_CHARACTER_REMAINING_CHARACTERS': 'The characters remaining are: %s. ',
+        'CHOOSE_CHARACTER_NEXT_PLAYER': [
+            'Player %s, which character would you like?'
+        ],
+        'CHOOSE_CHARACTER_NEXT_PLAYER_REPROMPT': 'Player %s, please pick as character. Your options are %s.',
+        'CHOOSE_CHARACTER_DONE': 'All players have characters now!',
+        'CHOOSE_CHARACTER_NO_CHOICE': 'Sorry player four, you are stuck with: the %s. Your color will be %s. ',
+        'PLAYER_CONFIRMATION': 'Got it player %s. You are the %s. Your color will be %s.',
         'PLAYER_CONFIRMATION_ONE': [
 
         ],
