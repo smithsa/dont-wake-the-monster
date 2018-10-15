@@ -65,6 +65,9 @@ module.exports = {
         'PLAYER_CONFIRMATION_ONE': [
 
         ],
+        'GAME_INSTRUCTIONS_1': 'The objective of this game is to not wake the sleeping grizzly ghoul while you try to collect as many coins on a path to the golden ticket. ',
+        'GAME_INSTRUCTIONS_2': 'Each button press is a step in the field. You can collect coins along the way too.',
+        'GAME_INSTRUCTIONS_3': 'But there are bombs on the field, if you set off the third bomb, the grizzly ghoul will awaken! The player with the most coins wins. Let\'s begin. ',
         'PLAYER_CONFIRMATION_TWO': [
 
         ],

@@ -81,6 +81,11 @@ module.exports = {
             'player3': '',
             'player4': ''
         },
+        'gameBoard':25,
+        'mines': [],
+        'coins': [],
+        'minecount':3,
+        'coinCount':13,
         'characterRollCounter': 0,
         'round': 1,
         'currentPlayer': 1

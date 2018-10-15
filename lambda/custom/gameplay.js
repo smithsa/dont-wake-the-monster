@@ -282,6 +282,9 @@ const GamePlay = {
 
             if(sessionAttributes.game.playerCount == currentPlayer){
                 ctx.outputSpeech.push(ctx.t('CHOOSE_CHARACTER_DONE'));
+                ctx.outputSpeech.push(ctx.t('GAME_INSTRUCTIONS_1'));
+                ctx.outputSpeech.push(ctx.t('GAME_INSTRUCTIONS_2'));
+                ctx.outputSpeech.push(ctx.t('GAME_INSTRUCTIONS_3'));
                 sessionAttributes.state = Settings.SKILL_STATES.PLAY_MODE;
                 return handlerInput.responseBuilder.getResponse();
             }
