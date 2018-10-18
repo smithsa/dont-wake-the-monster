@@ -64,6 +64,50 @@ const ROLL_CALL_ANIMATIONS = {
     }
 };
 
+
+
+// Define a recognizer for button down events that will match when any button is pressed down.
+// We'll use this recognizer as trigger source for the "button_down_event" during play
+// see: https://developer.amazon.com/docs/gadget-skills/define-echo-button-events.html#recognizers
+
+//TODO: change to fuzzy false and add up down actions
+const playerStepDirective = (deviceID) => {
+    let recognizer = {
+        "step_recognize_2": {
+            "type": "match",
+            "fuzzy": true,
+            "gadgetIds": [deviceID],
+            "anchor": "end",
+            "pattern": [
+                {
+                    "gadgetIds": [deviceID],
+                    "action": "down"
+                }
+            ]
+        }
+    };
+
+    return recognizer;
+}
+
+// Define named events based on the DIRECT_BUTTON_DOWN_RECOGNIZER and the built-in "timed out" recognizer
+// to report back to the skill when either of the two buttons in play was pressed and eventually when the
+// input handler times out
+// see: https://developer.amazon.com/docs/gadget-skills/define-echo-button-events.html#define
+const DIRECT_MODE_EVENTS = {
+    "step_event_2": {
+        "meets": ["step_recognize_2"],
+        "reports": "history",
+        "maximumInvocations": 10,
+        "shouldEndInputHandler": false
+    },
+    "timeout": {
+        "meets": ["timed out"],
+        "reports": "history",
+        "shouldEndInputHandler": true
+    }
+};
+
 let skill;
  
 exports.handler = function (event, context) {
@@ -188,8 +232,10 @@ const GlobalHandlers = {
                 && intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent';
         },
         handle(handlerInput) {
+            let { attributesManager } = handlerInput;
+            const ctx = attributesManager.getRequestAttributes();
             console.log("Global.StopIntentHandler: handling request");
-            handlerInput.responseBuilder.speak('Good Bye!')
+            handlerInput.responseBuilder.speak(ctx.t('EXIT_MESSAGE'));
             return GlobalHandlers.SessionEndedRequestHandler.handle(handlerInput);
         }
     },
@@ -221,20 +267,20 @@ const GlobalHandlers = {
                     case 'button_checked_in':
                         ctx.gameInputEvents = gameEngineEvents[i].inputEvents;
                         return RollCall.HandleButtonCheckIn(handlerInput);
-                    case 'button_down_event':
-                        if (sessionAttributes.state == Settings.SKILL_STATES.PLAY_MODE) {
-                            ctx.gameInputEvents = gameEngineEvents[i].inputEvents;
-                            return GamePlay.HandleButtonPressed(handlerInput);
-                        }
-                        break;
                     case 'step_event':
+                        console.log('GADGET DIRECTIVE TRIGGER: step_event');
                         if (sessionAttributes.state == Settings.SKILL_STATES.PLAY_MODE) {
                             ctx.gameInputEvents = gameEngineEvents[i].inputEvents;
                             return GamePlay.HandleButtonStepped(handlerInput);
                         }
                         break;
                     case 'timeout':
-                        return GlobalHandlers.HandleTimeout(handlerInput);
+                        console.log('GADGET DIRECTIVE TRIGGER: timeout');
+                        if (sessionAttributes.state == Settings.SKILL_STATES.PLAY_MODE) {
+                            console.log('GADGET DIRECTIVE TRIGGER: timeout from game');
+                            return GlobalHandlers.HandleTimeout(handlerInput);
+                        }
+
                         break;
                 }
             }
@@ -269,7 +315,8 @@ const GlobalHandlers = {
                 ctx.outputSpeech.push(Settings.WAITING_AUDIO);
                 ctx.timeout = 30000;
                 return RollCall.StartRollCall(handlerInput);
-            } else if (state === Settings.SKILL_STATES.EXIT_MODE 
+            }
+            else if (state === Settings.SKILL_STATES.EXIT_MODE
                 && sessionAttributes.expectingEndSkillConfirmation === true) {
                 return GlobalHandlers.SessionEndedRequestHandler.handle(handlerInput);                                
             } else if (state === Settings.SKILL_STATES.EXIT_MODE) {
@@ -325,6 +372,7 @@ const GlobalHandlers = {
         }
     },
     HandleTimeout: function(handlerInput) {
+
     console.log("rollCallModeIntentHandlers::InputHandlerEvent::timeout");
     const {attributesManager} = handlerInput;
     const ctx = attributesManager.getRequestAttributes();
@@ -340,7 +388,6 @@ const GlobalHandlers = {
     else if(sessionAttributes.state == Settings.SKILL_STATES.PLAYER_COUNT_MODE){
         console.log('TIMEOUT:', 'PLAYER_COUNT_MODE');
         ctx.outputSpeech = [ctx.t('TIMEOUT_PLAYER_COUNT')];
-        ctx.shouldEndSession = true;
     }
     else if(sessionAttributes.state == Settings.SKILL_STATES.CHOOSE_CHARACTER_MODE){
         let chosenCharacters = sessionAttributes.chosenCharacters;
@@ -352,11 +399,17 @@ const GlobalHandlers = {
         let availableCharactersStringBeforePick = HelperFunctions.getRemainingCharacterNames(chosenCharacters, charactersList);
         console.log('TIMEOUT:', 'CHOOSE_CHARACTER_MODE');
         ctx.outputSpeech = [ctx.t('TIMEOUT_CHOOSE_CHARACTER', availableCharactersStringBeforePick)];
-        ctx.shouldEndSession = true;
     }
     else if(sessionAttributes.state == Settings.SKILL_STATES.PLAY_MODE){
-        console.log('TIMEOUT:', 'PLAY_MODE');
+        console.log('TIMEOUT:', 'PLAYMODE GADGET');
+        const {attributesManager} = handlerInput;
+        const ctx = attributesManager.getRequestAttributes();
+        let deviceIds = sessionAttributes.DeviceIDs;
+        sessionAttributes.game.isStartOfTurn = true;
         ctx.outputSpeech = [ctx.t('TIMEOUT_PLAY_MODE')];
+
+        //TODO give result, ask next user if they want to go or pass
+        return handlerInput.responseBuilder.getResponse();
     }else{//the quit mode
         return GlobalHandlers.StopIntentHandler;
     }
@@ -397,10 +450,6 @@ DefaultHandler: {
                 && handlerInput.requestEnvelope.request.intent.name === 'chooseCharacterIntent') {
                 return GamePlay.ChooseCharacterIntentHandler(handlerInput);
             }
-
-            //sessionAttributes.state == Settings.SKILL_STATES.PLAY_MODE
-
-
 
             const ctx = handlerInput.attributesManager.getRequestAttributes();
  
@@ -498,10 +547,10 @@ DefaultHandler: {
     }
 };
 
-// ***********************************************************************
-//   LocalizationInterceptor
-//     used for localization of the skill
-// ***********************************************************************
+
+/*
+* Used for skill localization
+*/
 const LocalizationInterceptor = {
     process(handlerInput) {
         const localizationClient = i18n.use(sprintf).init({

@@ -37,6 +37,9 @@ module.exports = {
     // We'll use an audio sample of a ticking clock to play whenever the skill is waiting for button presses
     // This is an audio file from the ASK Soundbank: https://developer.amazon.com/docs/custom-skills/foley-sounds.html
     WAITING_AUDIO: '<audio src="https://s3.amazonaws.com/ask-soundlibrary/foley/amzn_sfx_rhythmic_ticking_30s_01.mp3"/>',
+    MOVE_AUDIO: '<audio src="soundbank://soundlibrary/cartoon/amzn_sfx_boing_short_1x_01" />',
+    COIN_AUDIO: '<audio src=\'soundbank://soundlibrary/ui/gameshow/amzn_ui_sfx_gameshow_positive_response_01\'/>',
+    MINE_AUDIO: '<audio src=\'soundbank://soundlibrary/ui/gameshow/amzn_ui_sfx_gameshow_negative_response_01\'/>',
 
     // We'll set up a map of custom colors to each of the three allowed colord: blue, green and red
     BREATH_CUSTOM_COLORS: { 
@@ -44,6 +47,7 @@ module.exports = {
         'green': '184518',
         'red': '603018',
         'black': '000000',
+        'white': 'ffffff',
         'orange': 'e67e22',
         'purple': '8e44ad',
     },
@@ -62,7 +66,9 @@ module.exports = {
         }
     },
     GAME:{
+        'isStartOfTurn': false,
         'playerCount': 0,
+        'stepsAllowed': 3,
         'overallScore': {
             'player1': 0,
             'player2': 0,
@@ -84,10 +90,12 @@ module.exports = {
         'gameBoard':25,
         'mines': [],
         'coins': [],
-        'minecount':3,
+        'mineCount':3,
         'coinCount':13,
+        'eliminated':[],
         'characterRollCounter': 0,
         'round': 1,
-        'currentPlayer': 1
+        'currentPlayer': 1,
+        'currentPlayerStepCount': 0,
     }
 };

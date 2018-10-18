@@ -30,38 +30,22 @@ const Settings = require('settings.js');
 // Define a recognizer for button down events that will match when any button is pressed down.
 // We'll use this recognizer as trigger source for the "button_down_event" during play
 // see: https://developer.amazon.com/docs/gadget-skills/define-echo-button-events.html#recognizers
-const DIRECT_BUTTON_DOWN_RECOGNIZER = {
-    "button_down_recognizer": {
-        "type": "match",
-        "fuzzy": false,
-        "anchor": "end",
-        "pattern": [{
-                "action": "down"
-            }
-        ]
-    }
-};
 
 //TODO: change to fuzzy false and add up down actions
 const playerStepDirective = (deviceID) => {
-    console.log('** Device ID', deviceID);
     let recognizer = {
         "step_recognizer": {
             "type": "match",
-            "fuzzy": false,
+            "fuzzy": true,
             "gadgetIds": [deviceID],
             "anchor": "end",
             "pattern": [
                 {
                     "gadgetIds": [deviceID],
                     "action": "down"
-                },
-                {
-                    "gadgetIds": [deviceID],
-                    "action": "up"
                 }
             ]
-        },
+        }
     };
 
     return recognizer;
@@ -75,7 +59,7 @@ const DIRECT_MODE_EVENTS = {
     "step_event": {
         "meets": ["step_recognizer"],
         "reports": "history",
-        "maximumInvocations": 5,
+        "maximumInvocations": Settings.GAME.stepsAllowed,
         "shouldEndInputHandler": false
     },
     "timeout": {
@@ -93,23 +77,21 @@ const DIRECT_MODE_EVENTS = {
 //     after the user registered the buttons - this is the main mode
 // ***********************************************************************
 const GamePlay = {
-
-    incrementStepIntent: function(handlerInput) {
+    incrementStepIntentHandler: function(handlerInput) {
         console.log("GamePlay::incrementStepIntent");
         const {attributesManager} = handlerInput;
         const ctx = attributesManager.getRequestAttributes();
         const sessionAttributes = attributesManager.getSessionAttributes();
         const { request } = handlerInput.requestEnvelope;
 
-
         let deviceIds = sessionAttributes.DeviceIDs;
 
-        let uColor = sessionAttributes.ColorChoice;
-        deviceIds = deviceIds.slice(-2);
+        let uColor = 'blue';
+        deviceIds = deviceIds.slice(-1);
 
         ctx.directives.push(GadgetDirectives.startInputHandler({
             'timeout': 10000,
-            'recognizers': playerStepDirective(deviceIds[1]),
+            'recognizers': playerStepDirective(deviceIds[0]),
             'events': DIRECT_MODE_EVENTS
         } ));
 
@@ -129,7 +111,14 @@ const GamePlay = {
             'animations': BasicAnimations.SolidAnimation(1, uColor, 200)
         } ));
 
-        ctx.outputSpeech.push("Calling Increment Step Counter");
+
+        ctx.outputSpeech.push(ctx.t('INCREMENT_STEP_MESSAGE', sessionAttributes.game.currentPlayer));
+
+        let currentPLayerNumber = parseInt(sessionAttributes.game.currentPlayer);
+        sessionAttributes.game.currentPlayer = currentPLayerNumber+1;
+        if(currentPLayerNumber == parseInt(sessionAttributes.game.playerCount)){
+            sessionAttributes.game.currentPlayer = 1;
+        }
 
 
         ctx.openMicrophone = false;
@@ -206,8 +195,6 @@ const GamePlay = {
             }
         }
 
-
-
         let chosenCharactersBeforePick = sessionAttributes.chosenCharacters;
         let charactersList = sessionAttributes.characterProperties.reduce(function(list, list_item) {
                 list.push(list_item.name);
@@ -215,22 +202,18 @@ const GamePlay = {
             }, []
         );
 
-
         let availableCharactersStringBeforePick = HelperFunctions.getRemainingCharacterNames(chosenCharactersBeforePick, charactersList);
 
-        //todo set if character is already in chosen sessionAttributes.chosenCharacters
         let is_already_chosen = sessionAttributes.chosenCharacters.some(function(name){
             return name === gameCharacter;
         });
 
         if (gameCharacter === undefined) {
-            //TODO Give options here
             ctx.reprompt = [ctx.t('CHOOSE_CHARACTER_UNDEFINED', availableCharactersStringBeforePick)];
             ctx.outputSpeech = [ctx.t('HELP_SYMPATHY') + ctx.reprompt[0]];
             ctx.openMicrophone = false;
             return handlerInput.responseBuilder.getResponse();
         }else if(is_already_chosen){
-            //TODO Give options here
             ctx.reprompt = [ctx.t('CHOOSE_CHARACTER_UNAVAILABLE_REPROMPT', availableCharactersStringBeforePick)];
             ctx.outputSpeech = [ctx.t('CHOOSE_CHARACTER_UNAVAILABLE') + ctx.reprompt[0]];
             ctx.openMicrophone = false;
@@ -281,15 +264,46 @@ const GamePlay = {
             }
 
             if(sessionAttributes.game.playerCount == currentPlayer){
+                sessionAttributes.game.currentPlayer = 1;
                 ctx.outputSpeech.push(ctx.t('CHOOSE_CHARACTER_DONE'));
                 ctx.outputSpeech.push(ctx.t('GAME_INSTRUCTIONS_1'));
                 ctx.outputSpeech.push(ctx.t('GAME_INSTRUCTIONS_2'));
                 ctx.outputSpeech.push(ctx.t('GAME_INSTRUCTIONS_3'));
+                //TODO put game logic start here
+                // ctx.openMicrophone = false;
+                //
+                // ctx.directives.push(GadgetDirectives.startInputHandler({
+                //     'timeout': 7000,
+                //     'recognizers': playerStepDirective(deviceIds[0]),
+                //     'events': DIRECT_MODE_EVENTS
+                // } ));
+                //
+                // // Save Input Handler Request ID
+                // sessionAttributes.CurrentInputHandlerID = request.requestId;
+                // console.log("Current Input Handler ID: " + sessionAttributes.CurrentInputHandlerID);
+                //
+                // // Build 'idle' breathing animation, based on the users color of choice, that will play immediately
+                // ctx.directives.push(GadgetDirectives.setIdleAnimation({
+                //     'targetGadgets': deviceIds,
+                //     'animations': BasicAnimations.BreatheAnimation(30, Settings.BREATH_CUSTOM_COLORS['white'], 450)
+                // } ));
+                //
+                // // Build 'button down' animation, based on the users color of choice, for when the button is pressed
+                // ctx.directives.push(GadgetDirectives.setButtonDownAnimation({
+                //     'targetGadgets': deviceIds,
+                //     'animations': BasicAnimations.SolidAnimation(1, 'white', 2000)
+                // } ));
+                //
+                // // build 'button up' animation, based on the users color of choice, for when the button is released
+                // ctx.directives.push(GadgetDirectives.setButtonUpAnimation({
+                //     'targetGadgets': deviceIds,
+                //     'animations': BasicAnimations.SolidAnimation(1, 'white', 200)
+                // } ));
+
                 sessionAttributes.state = Settings.SKILL_STATES.PLAY_MODE;
                 return handlerInput.responseBuilder.getResponse();
             }
 
-            //TODO make availabe charcters a string so I can reference in the timeout
             ctx.outputSpeech.push(ctx.t('CHOOSE_CHARACTER_REMAINING_CHARACTERS', availableCharactersString));
             ctx.outputSpeech.push(ctx.t('CHOOSE_CHARACTER_NEXT_PLAYER', nextPlayer));
             ctx.outputSpeech.push(Settings.WAITING_AUDIO);
@@ -297,84 +311,24 @@ const GamePlay = {
             return handlerInput.responseBuilder.getResponse();
         }
     },
-    HandleButtonPressed: function(handlerInput) {
-        console.log("GamePlay::InputHandlerEvent::button_down_event");
-        const {attributesManager} = handlerInput;
-        const ctx = attributesManager.getRequestAttributes();
-        const sessionAttributes = attributesManager.getSessionAttributes();   
-        
-        let deviceIds = sessionAttributes.DeviceIDs;        
-        let gameInputEvents = ctx.gameInputEvents;
-        let buttonId = gameInputEvents[0].gadgetId;
-
-        console.log('!! HISTORY HERE', ctx);
-        console.log('!! SESSION HERE', sessionAttributes);
-        // Checks for Invalid Button ID
-        if (deviceIds.indexOf(buttonId) == -1) {
-            console.log("Button event received for unregisterd gadget.");
-            // Don't send any directives back to Alexa for invalid Button ID Events
-            ctx.outputSpeech = ["Unregistered button"];
-            ctx.outputSpeech.push("Only buttons registered during roll call are in play.");
-            ctx.outputSpeech.push(Settings.WAITING_AUDIO);
-        } else {
-            var buttonNo = deviceIds.indexOf(buttonId);
-            ctx.outputSpeech = ["Button " + buttonNo + ". "];
-            ctx.outputSpeech.push(Settings.WAITING_AUDIO);            
-        }
-
-
-
-        ctx.openMicrophone = false;
-        return handlerInput.responseBuilder.getResponse();
-    },
-
-
-
     HandleButtonStepped: function(handlerInput) {
         console.log("GamePlay::InputHandlerEvent::step_event");
         const {attributesManager} = handlerInput;
         const ctx = attributesManager.getRequestAttributes();
         const sessionAttributes = attributesManager.getSessionAttributes();
 
+
+        sessionAttributes.game.isStartOfTurn = false;
+
         let deviceIds = sessionAttributes.DeviceIDs;
         let gameInputEvents = ctx.gameInputEvents;
-        let buttonId = gameInputEvents[0].gadgetId;
 
-        // Checks for Invalid Button ID
-        if (deviceIds.indexOf(buttonId) == -1) {
-            console.log("Button event received for unregisterd gadget.");
-            // Don't send any directives back to Alexa for invalid Button ID Events
-            ctx.outputSpeech = ["Unregistered button"];
-            ctx.outputSpeech.push("Only buttons registered during roll call are in play.");
-            //ctx.outputSpeech.push(Settings.WAITING_AUDIO);
-        } else {
-            var buttonNo = deviceIds.indexOf(buttonId);
-            console.log('**BUTTON ID', buttonId);
-            console.log('**DEVICE ID', deviceIds[2]);
-            console.log('!! HISTORY HERE', ctx);
-            console.log('!! SESSION HERE', sessionAttributes);
-            console.log('$$ session handlerInput in event', handlerInput.requestEnvelope.request.events);
+        ctx.outputSpeech = [Settings.MOVE_AUDIO];
 
-            ctx.outputSpeech = ["You pressed the button."];
-            // if(buttonId !== deviceIds[2]){ //will get player 2 id
-            //     ctx.outputSpeech = ["You are not the correct player."];
-            // }else{
-            //     ctx.outputSpeech = ["You pressed the button."];
-            // }
+        let stepCount = Settings.GAME.currentPlayerStepCount;
+        Settings.GAME.currentPlayerStepCount = stepCount + 1;
+        console.log('CURRENT STEP COUNT:', Settings.GAME.currentPlayerStepCount);
 
-            //ctx.outputSpeech.push(Settings.WAITING_AUDIO);
-        }
-
-        // ctx.directives.push(GadgetDirectives.startInputHandler({
-        //     'timeout': 30000,
-        //     'recognizers': playerStepDirective(deviceIds[1]),
-        //     'events': DIRECT_MODE_EVENTS
-        // } ));
-
-        //let originatingRequestId = ctx;
-        //console.log("!! SESSION ATTRIBUTES: ", sessionAttributes);
-        //TODO: Give id here of the directive, will need the originatingRequestId
-        //ctx.directives.push(GadgetDirectives.stopInputHandler({id: sessionAttributes.CurrentInputHandlerID}));
 
         ctx.openMicrophone = false;
         return handlerInput.responseBuilder.getResponse();

@@ -72,7 +72,7 @@ const ROLL_CALL_EVENTS = {
     "button_checked_in": {
         "meets": ["roll_call_first_button_recognizer"],
         "reports": "matches",
-        "shouldEndInputHandler": false,
+        "shouldEndInputHandler": true,
         "maximumInvocations": 1
     },
     "timeout": {
@@ -130,9 +130,13 @@ const RollCall = {
         // setup an array of DeviceIDs to hold IDs of buttons that will be used in the skill
         sessionAttributes.DeviceIDs = [];        
         sessionAttributes.DeviceIDs[0] = "Device ID listings";
+
+        // Games variables
+        sessionAttributes.game =  Settings.GAME;
         // Save StartInput Request ID
         sessionAttributes.CurrentInputHandlerID = handlerInput.requestEnvelope.request.requestId;
- 
+        sessionAttributes.StepInputHandlerID = null;
+
         ctx.openMicrophone = false;
         return handlerInput.responseBuilder.getResponse();
     },
@@ -144,20 +148,6 @@ const RollCall = {
         const sessionAttributes = attributesManager.getSessionAttributes();
 
         console.log("RollCall:: request attributes  = " + JSON.stringify(ctx, null, 2));
-
-        // just in case we ever get this event, after the `second_button_checked_in` event
-        //  was already handled, we check the make sure the `buttonCount` attribute is set to 0;
-        //   if not, we will silently ignore the event
-        if (sessionAttributes.buttonCount === 0) {                        
-            // Say something when we first encounter a button
-            ctx.outputSpeech = [ctx.t('BUTTON_IS_REGISTERED')];
-
-            let fistButtonId = ctx.gameInputEvents[0].gadgetId;
-            
-            sessionAttributes.DeviceIDs[1] = fistButtonId;
-            sessionAttributes.buttonCount = 1;
-        }
-
 
         //setting up the game variables
         sessionAttributes.game = Settings.GAME;
