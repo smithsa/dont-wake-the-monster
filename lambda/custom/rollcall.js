@@ -92,8 +92,6 @@ const RollCall = {
         console.log("RollCall::NewSession");
 
         const ctx = handlerInput.attributesManager.getRequestAttributes();
-         // setup the output speech that Alexa should speak when roll call is stared, 
-         // after the skill is first launched
         ctx.outputSpeech = [ctx.t('WELCOME_MESSAGE', ctx.t('GREETING'), ctx.t('SKILL_NAME'))];
         ctx.outputSpeech.push(ctx.t('ROLL_CALL_INSTRUCTION'));
         ctx.outputSpeech.push(Settings.WAITING_AUDIO);
@@ -117,10 +115,6 @@ const RollCall = {
             'recognizers': ROLL_CALL_RECOGNIZERS, 
             'events': ROLL_CALL_EVENTS 
         }));
-        ctx.directives.push(GadgetDirectives.setButtonDownAnimation(
-            ROLL_CALL_ANIMATIONS.ButtonCheckInDown));                            
-        ctx.directives.push(GadgetDirectives.setButtonUpAnimation(
-            ROLL_CALL_ANIMATIONS.ButtonCheckInUp));   
  
         // start keeping track of some state
         sessionAttributes.state = Settings.SKILL_STATES.ROLL_CALL_MODE;
@@ -128,11 +122,10 @@ const RollCall = {
         sessionAttributes.isRollCallComplete = false;
         sessionAttributes.expectingEndSkillConfirmation = false;
         // setup an array of DeviceIDs to hold IDs of buttons that will be used in the skill
-        sessionAttributes.DeviceIDs = [];        
-        sessionAttributes.DeviceIDs[0] = "Device ID listings";
+        sessionAttributes.DeviceIDs = [];
 
         // Games variables
-        sessionAttributes.game =  Settings.GAME;
+
         // Save StartInput Request ID
         sessionAttributes.CurrentInputHandlerID = handlerInput.requestEnvelope.request.requestId;
         sessionAttributes.StepInputHandlerID = null;
@@ -148,6 +141,22 @@ const RollCall = {
         const sessionAttributes = attributesManager.getSessionAttributes();
 
         console.log("RollCall:: request attributes  = " + JSON.stringify(ctx, null, 2));
+
+        // just in case we ever get this event, after the `second_button_checked_in` event
+        //  was already handled, we check the make sure the `buttonCount` attribute is set to 0;
+        //   if not, we will silently ignore the event
+        if (sessionAttributes.buttonCount === 0) {
+            // Say something when we first encounter a button
+            // ctx.outputSpeech = ['Hello, button 1.'];
+            // ctx.outputSpeech.push(Settings.WAITING_AUDIO);
+
+            let fistButtonId = ctx.gameInputEvents[0].gadgetId;
+            ctx.directives.push(GadgetDirectives.setIdleAnimation(
+                ROLL_CALL_ANIMATIONS.ButtonCheckInIdle, { 'targetGadgets': [fistButtonId] } ));
+
+            sessionAttributes.DeviceIDs[0] = fistButtonId;
+            sessionAttributes.buttonCount = 1;
+        }
 
         //setting up the game variables
         sessionAttributes.game = Settings.GAME;

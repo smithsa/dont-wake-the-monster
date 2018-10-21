@@ -94,9 +94,75 @@
             "i want to a be {gameCharacter} please",
             "can i be a {gameCharacter} please"
           ]
+        },
+        {
+          "name": "goIntent",
+          "slots": [
+            {
+              "name": "goValue",
+              "type": "GOVALUES"
+            }
+          ],
+          "samples": [
+            "{goValue}",
+            "i'll {goValue}",
+            "i am {goValue}",
+            "can i {goValue}",
+            "{goValue} please",
+            "i'll {goValue} please",
+            "i am {goValue} please",
+            "can i {goValue} please",
+            "please {goValue}",
+            "please i'll {goValue}",
+            "please i am {goValue}",
+            "please can i {goValue}"
+          ]
+        },
+        {
+          "name": "passIntent",
+          "slots": [
+            {
+              "name": "passValue",
+              "type": "PASSVALUES"
+            }
+          ],
+          "samples": [
+            "{passValue}",
+            "{passValue} please",
+            "i will {passValue} please",
+            "i want to {passValue} please",
+            "i want to {passValue}",
+            "please {passValue}",
+            "can i {passValue}",
+            "can i {passValue} my turn",
+            "i'll {passValue}",
+            "i am {passValue}"
+          ]
         }
       ],
       "types": [
+        {
+          "values": [
+            {
+              "name": {
+                "value": "go",
+                "synonyms": ["take my turn", "make my move", "take my move", "going"]
+              }
+            }
+          ],
+          "name": "GOVALUES"
+        },
+        {
+          "values": [
+            {
+              "name": {
+                "value": "skip",
+                "synonyms": ["pass", "forgo", "passing", "skipping"]
+              }
+            }
+          ],
+          "name": "PASSVALUES"
+        },
         {
           "values": [
             {
@@ -113,8 +179,8 @@
             },
             {
               "name": {
-                "value": "fried-egg jellyfish",
-                "synonyms": ["fried-egg","jellyfish"]
+                "value": "fried egg jellyfish",
+                "synonyms": ["fried egg","jellyfish", "egg"]
               }
             },
             {

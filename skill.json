@@ -20,9 +20,9 @@
        "gadgetSupport": {
         "requirement": "REQUIRED", 
         "numPlayersMin": 2,
-        "numPlayersMax": 2,
-        "minGadgetButtons": 2,
-        "maxGadgetButtons": 2
+        "numPlayersMax": 4,
+        "minGadgetButtons": 1,
+        "maxGadgetButtons": 1
       }
     },
     "apis": {

@@ -87,7 +87,8 @@ const GamePlay = {
         let deviceIds = sessionAttributes.DeviceIDs;
 
         let uColor = 'blue';
-        deviceIds = deviceIds.slice(-1);
+
+        ctx.openMicrophone = false;
 
         ctx.directives.push(GadgetDirectives.startInputHandler({
             'timeout': 10000,
@@ -111,14 +112,15 @@ const GamePlay = {
             'animations': BasicAnimations.SolidAnimation(1, uColor, 200)
         } ));
 
-
-        ctx.outputSpeech.push(ctx.t('INCREMENT_STEP_MESSAGE', sessionAttributes.game.currentPlayer));
+        sessionAttributes.game.turnScore = 0;
+        ctx.outputSpeech.push(ctx.t('INCREMENT_STEP_MESSAGE'));
 
         let currentPLayerNumber = parseInt(sessionAttributes.game.currentPlayer);
-        sessionAttributes.game.currentPlayer = currentPLayerNumber+1;
-        if(currentPLayerNumber == parseInt(sessionAttributes.game.playerCount)){
-            sessionAttributes.game.currentPlayer = 1;
-        }
+        sessionAttributes.game.currentPlayer = ( currentPLayerNumber == parseInt(sessionAttributes.game.playerCount) ?  1 : currentPLayerNumber+1);
+        // sessionAttributes.game.currentPlayer = currentPLayerNumber+1;
+        // if(currentPLayerNumber == parseInt(sessionAttributes.game.playerCount)){
+        //     sessionAttributes.game.currentPlayer = 1;
+        // }
 
 
         ctx.openMicrophone = false;
@@ -132,19 +134,30 @@ const GamePlay = {
         const sessionAttributes = attributesManager.getSessionAttributes();
         const { request } = handlerInput.requestEnvelope;
 
-        const numberPlayers = request.intent.slots.numPlayers.value;
+        const numberPlayers = parseInt(request.intent.slots.numPlayers.value);
 
         if (numberPlayers === undefined) {
             ctx.reprompt = [ctx.t('NUM_PLAYERS_GIVE_NUMBER_AGAIN')];
             ctx.outputSpeech = [ctx.t('HELP_SYMPATHY') + ctx.reprompt[0]];
             ctx.openMicrophone = false;
             return handlerInput.responseBuilder.getResponse();
-        }else if(numberPlayers > 4){
+        }else if(numberPlayers > 4 || numberPlayers < 2){
             ctx.reprompt = [ctx.t('NUM_PLAYERS_GIVE_NUMBER_AGAIN')];
-            ctx.outputSpeech = [ctx.t('NUM_PLAYERS_TOO_MANY_PLAYERS') + ctx.reprompt[0]];
+            if(numberPlayers > 4){
+                ctx.outputSpeech = [ctx.t('NUM_PLAYERS_TOO_MANY_PLAYERS') + ctx.reprompt[0]];
+            }else{
+                ctx.outputSpeech = [ctx.t('NUM_PLAYERS_TOO_FEW_PLAYERS') + ctx.reprompt[0]];
+            }
             ctx.openMicrophone = false;
             return handlerInput.responseBuilder.getResponse();
         }else {
+            //TODO  set overall score and round score objects here
+            sessionAttributes.game.overallScore = {};
+            sessionAttributes.game.roundScore = {};
+            for(let i =1; i < numberPlayers+1; i++){
+                sessionAttributes.game.overallScore["player"+i] = 0;
+                sessionAttributes.game.roundScore["player"+i] = 0;
+            }
             let deviceIds = sessionAttributes.DeviceIDs;
             sessionAttributes.game.playerCount = numberPlayers;
 
@@ -231,8 +244,6 @@ const GamePlay = {
             //adding character so no one else can choose in future
             sessionAttributes.chosenCharacters.push(gameCharacter);
 
-            deviceIds = deviceIds.slice(-1);
-
             //get the color of the character
             let characterColor = sessionAttributes.characterProperties.find(function (item) {
                 return item.name === gameCharacter;
@@ -266,9 +277,11 @@ const GamePlay = {
             if(sessionAttributes.game.playerCount == currentPlayer){
                 sessionAttributes.game.currentPlayer = 1;
                 ctx.outputSpeech.push(ctx.t('CHOOSE_CHARACTER_DONE'));
+                ctx.outputSpeech.push(Settings.DRAMA_AUDIO);
                 ctx.outputSpeech.push(ctx.t('GAME_INSTRUCTIONS_1'));
-                ctx.outputSpeech.push(ctx.t('GAME_INSTRUCTIONS_2'));
+                ctx.outputSpeech.push(ctx.t('GAME_INSTRUCTIONS_2', Settings.GAME.stepsAllowed));
                 ctx.outputSpeech.push(ctx.t('GAME_INSTRUCTIONS_3'));
+                ctx.outputSpeech.push(ctx.t('GAME_INSTRUCTIONS_START'));
                 //TODO put game logic start here
                 // ctx.openMicrophone = false;
                 //
@@ -323,12 +336,60 @@ const GamePlay = {
         let deviceIds = sessionAttributes.DeviceIDs;
         let gameInputEvents = ctx.gameInputEvents;
 
-        ctx.outputSpeech = [Settings.MOVE_AUDIO];
+        //check what is at the game board position
+        let stepResult = HelperFunctions.checkMoveOnBoard(sessionAttributes.game.gameBoardPointer, sessionAttributes.game.mines, sessionAttributes.game.beans);
+        if(stepResult === 1){
+            let turnScore = sessionAttributes.game.turnScore;
+            sessionAttributes.game.turnScore = turnScore + 1;
 
-        let stepCount = Settings.GAME.currentPlayerStepCount;
-        Settings.GAME.currentPlayerStepCount = stepCount + 1;
-        console.log('CURRENT STEP COUNT:', Settings.GAME.currentPlayerStepCount);
+            let playerScoreKey = "player";
+            playerScoreKey += (sessionAttributes.game.currentPlayer == 1 ? sessionAttributes.game.playerCount : parseInt(sessionAttributes.game.currentPlayer) - 1);
+            sessionAttributes.game.overallScore[playerScoreKey] = parseInt(sessionAttributes.game.overallScore[playerScoreKey]) + 1;
+            ctx.outputSpeech = [Settings.BEAN_AUDIO];
+        }else if(stepResult === -1){
+            //count the trap detonated so far
+            let triggeredTrapCount = sessionAttributes.game.trapsTriggered;
+            sessionAttributes.game.trapsTriggered = parseInt(triggeredTrapCount) + 1;
+            console.log('TRIGGERED MINE TRAP:', sessionAttributes.game.trapsTriggered);
+            console.log('MINE COUNT TRAP:', Settings.GAME.mineCount);
 
+            if(sessionAttributes.game.trapsTriggered === Settings.GAME.mineCount){
+                sessionAttributes.state = Settings.SKILL_STATES.END_GAME_MODE;
+                ctx.outputSpeech = [Settings.TRAP_AUDIO];
+                ctx.outputSpeech.push(Settings.ROAR_AUDIO);
+                ctx.outputSpeech.push("You woke the monster. The game is over.");
+                //TODO change winners to chracter names
+                let winners = HelperFunctions.getWinner(sessionAttributes.game.overallScore);
+                winners[winners.length-1] = "and "+ winners[winners.length-1];
+                console.log('Winners', winners);
+                if(winners.length > 1){
+                    let drawMsg = "It was a draw between, ";
+                    let finalMsg = drawMsg + winners.join(',');
+                    ctx.outputSpeech.push(finalMsg);
+
+                 }else{
+                    ctx.outputSpeech.push("Congrats "+winners[0]+" You won the game.");
+                }
+
+                //TODO ask user if they want to play again
+                ctx.outputSpeech.push("Would you like to play again? You can say Yes if so or No to exit.");
+
+            }else{
+                ctx.outputSpeech = [Settings.TRAP_AUDIO];
+                ctx.outputSpeech.push(Settings.GROWL_AUDIO);
+                ctx.outputSpeech.push("You suck!, You set off one of the traps. Your turn is over. Next player you can take your turn. You can say go if you want to take your turn. Or pass to skip it.");
+            }
+
+            if (sessionAttributes.CurrentInputHandlerID) {
+                ctx.directives.push(GadgetDirectives.stopInputHandler({
+                    'id': sessionAttributes.CurrentInputHandlerID
+                }));
+            }
+        }else{
+            ctx.outputSpeech = [Settings.STEP_AUDIO];
+        }
+
+        sessionAttributes.game.gameBoardPointer = sessionAttributes.game.gameBoardPointer + 1;
 
         ctx.openMicrophone = false;
         return handlerInput.responseBuilder.getResponse();

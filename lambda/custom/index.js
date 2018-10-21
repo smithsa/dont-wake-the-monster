@@ -70,44 +70,6 @@ const ROLL_CALL_ANIMATIONS = {
 // We'll use this recognizer as trigger source for the "button_down_event" during play
 // see: https://developer.amazon.com/docs/gadget-skills/define-echo-button-events.html#recognizers
 
-//TODO: change to fuzzy false and add up down actions
-const playerStepDirective = (deviceID) => {
-    let recognizer = {
-        "step_recognize_2": {
-            "type": "match",
-            "fuzzy": true,
-            "gadgetIds": [deviceID],
-            "anchor": "end",
-            "pattern": [
-                {
-                    "gadgetIds": [deviceID],
-                    "action": "down"
-                }
-            ]
-        }
-    };
-
-    return recognizer;
-}
-
-// Define named events based on the DIRECT_BUTTON_DOWN_RECOGNIZER and the built-in "timed out" recognizer
-// to report back to the skill when either of the two buttons in play was pressed and eventually when the
-// input handler times out
-// see: https://developer.amazon.com/docs/gadget-skills/define-echo-button-events.html#define
-const DIRECT_MODE_EVENTS = {
-    "step_event_2": {
-        "meets": ["step_recognize_2"],
-        "reports": "history",
-        "maximumInvocations": 10,
-        "shouldEndInputHandler": false
-    },
-    "timeout": {
-        "meets": ["timed out"],
-        "reports": "history",
-        "shouldEndInputHandler": true
-    }
-};
-
 let skill;
  
 exports.handler = function (event, context) {
@@ -123,6 +85,8 @@ exports.handler = function (event, context) {
              GlobalHandlers.StopIntentHandler,
              GlobalHandlers.YesIntentHandler,
              GlobalHandlers.NoIntentHandler,
+             GlobalHandlers.PassIntentHandler,
+             GlobalHandlers.GoIntentHandler,
              GlobalHandlers.SessionEndedRequestHandler,
              GlobalHandlers.DefaultHandler
          )
@@ -151,7 +115,49 @@ const GlobalHandlers = {
         },
         handle(handlerInput) {
             console.log("LaunchRequestHandler: handling request");
-            return RollCall.NewSession(handlerInput);
+
+            //TODO Create the play again that calls this
+            const { attributesManager } = handlerInput;
+            const sessionAttributes = attributesManager.getSessionAttributes();
+
+            //TODO return a new game message. Reset the variables and ask the first player to go again
+            if(sessionAttributes.hasOwnProperty('state')){
+                sessionAttributes.state = Settings.SKILL_STATES.PLAY_MODE;
+                sessionAttributes.game.currentPlayer = 1;
+                sessionAttributes.game.gameBoardPointer = 0;
+                sessionAttributes.game.turnScore = 0;
+                sessionAttributes.replayCount = (sessionAttributes.hasOwnProperty('replayCount') ? sessionAttributes.replayCount + 1 : 1);
+                //reset scores
+                let scores = sessionAttributes.game.overallScore;
+                for(let key in scores){
+                    if(scores.hasOwnProperty(key)){
+                        sessionAttributes.game.overallScore[key] = 0;
+                    }
+                }
+
+                //resetting items that need to be updated
+                sessionAttributes.game.trapsTriggered = 0;
+
+                //setting up board again
+                let gameBoardCount = Settings.GAME.gameBoard + HelperFunctions.getRandomInteger(0,2);
+                let beanCount = Settings.GAME.beansCount + HelperFunctions.getRandomInteger(0,1);
+                sessionAttributes.game.gameBoard = gameBoardCount;
+                sessionAttributes.game.mines = HelperFunctions.getUniqueRandomIntegers(Settings.GAME.mineCount, gameBoardCount - 1);
+                sessionAttributes.game.beans = HelperFunctions.getUniqueRandomIntegersWithRestrictions(beanCount, gameBoardCount - 1, sessionAttributes.game.mines);
+                return handlerInput.responseBuilder
+                    .speak('Okay. Let\'s play again. You know the drill. Try to collect as many beans as possible without waking the sleeping monster. Remember, there are traps and the third trap will wake the monster. Player with the most beans when the monster wakes up is the winner. Player one, would you like to go or skip?')
+                    .getResponse();
+            }else{
+                sessionAttributes.game =  Settings.GAME;
+                let gameBoardCount = Settings.GAME.gameBoard + HelperFunctions.getRandomInteger(0,2);
+                let beanCount = Settings.GAME.beansCount + HelperFunctions.getRandomInteger(0,1);
+                sessionAttributes.game.gameBoard = gameBoardCount;
+                sessionAttributes.game.mines = HelperFunctions.getUniqueRandomIntegers(Settings.GAME.mineCount, gameBoardCount - 1);
+                sessionAttributes.game.mines = [0,1,2];
+                sessionAttributes.game.beans = HelperFunctions.getUniqueRandomIntegersWithRestrictions(beanCount, gameBoardCount - 1, sessionAttributes.game.mines);
+                return RollCall.NewSession(handlerInput);
+            }
+
         }
     },
     ErrorHandler: {
@@ -206,7 +212,7 @@ const GlobalHandlers = {
 
                 ctx.outputSpeech = ["Now that you have registered a button, "];
                 ctx.outputSpeech.push("Tell me how many players there are. ");
-                ctx.outputSpeech.push("Up to four players can play this game. ");
+                ctx.outputSpeech.push("Two to four players can play this game. ");
                 ctx.outputSpeech.push("If you do not wish to continue, you can say exit. ");                
             } else if(sessionAttributes.isRollCallComplete === false) {
                 // the user hasn't yet completed roll call
@@ -235,8 +241,57 @@ const GlobalHandlers = {
             let { attributesManager } = handlerInput;
             const ctx = attributesManager.getRequestAttributes();
             console.log("Global.StopIntentHandler: handling request");
-            handlerInput.responseBuilder.speak(ctx.t('EXIT_MESSAGE'));
+            console.log('EXIT AUDIO', Settings.EXIT_AUDIO);
+            handlerInput.responseBuilder.speak(ctx.t('EXIT_MESSAGE', Settings.EXIT_AUDIO));
             return GlobalHandlers.SessionEndedRequestHandler.handle(handlerInput);
+        }
+    },
+    GoIntentHandler: {
+        canHandle(handlerInput) {
+            let { request } = handlerInput.requestEnvelope;
+            console.log("Global.GoIntentHandler: checking if it can handle "
+                + request.type);
+            return request.type === 'goIntent';
+        },
+        handle(handlerInput) {
+            const { attributesManager } = handlerInput;
+            const sessionAttributes = attributesManager.getSessionAttributes();
+            if(sessionAttributes.state = Settings.SKILL_STATES.PLAY_MODE){
+                return GamePlay.incrementStepIntentHandler(handlerInput);
+            }
+
+            return GlobalHandlers.HelpIntentHandler.handle(handlerInput);
+        }
+    },
+    PassIntentHandler: {
+        canHandle(handlerInput) {
+            let { request } = handlerInput.requestEnvelope;
+            console.log("Global.PassIntentHandler: checking if it can handle "
+                + request.type);
+            return request.type === 'passIntent';
+        },
+        handle(handlerInput) {
+            const { attributesManager } = handlerInput;
+            const sessionAttributes = attributesManager.getSessionAttributes();
+            const ctx = attributesManager.getRequestAttributes();
+            ctx.openMicrophone = true;
+
+            if(sessionAttributes.state = Settings.SKILL_STATES.PLAY_MODE){
+                let currentPLayerNumber = parseInt(sessionAttributes.game.currentPlayer);
+
+                ctx.outputSpeech = ["Skipping player "+currentPLayerNumber+"."];
+
+                sessionAttributes.game.currentPlayer = currentPLayerNumber+1;
+                if(currentPLayerNumber == parseInt(sessionAttributes.game.playerCount)){
+                    sessionAttributes.game.currentPlayer = 1;
+                }
+
+                ctx.outputSpeech.push("Player "+sessionAttributes.game.currentPlayer+", would you like to go, or skip?");
+                return handlerInput.responseBuilder.getResponse();
+            }
+
+            return GlobalHandlers.HelpIntentHandler.handle(handlerInput);
+
         }
     },
     GameEngineInputHandler: {
@@ -270,7 +325,6 @@ const GlobalHandlers = {
                     case 'step_event':
                         console.log('GADGET DIRECTIVE TRIGGER: step_event');
                         if (sessionAttributes.state == Settings.SKILL_STATES.PLAY_MODE) {
-                            ctx.gameInputEvents = gameEngineEvents[i].inputEvents;
                             return GamePlay.HandleButtonStepped(handlerInput);
                         }
                         break;
@@ -316,6 +370,9 @@ const GlobalHandlers = {
                 ctx.timeout = 30000;
                 return RollCall.StartRollCall(handlerInput);
             }
+            else if(state === Settings.SKILL_STATES.END_GAME_MODE){
+                return GlobalHandlers.LaunchRequestHandler.handle(handlerInput);
+            }
             else if (state === Settings.SKILL_STATES.EXIT_MODE
                 && sessionAttributes.expectingEndSkillConfirmation === true) {
                 return GlobalHandlers.SessionEndedRequestHandler.handle(handlerInput);                                
@@ -353,10 +410,14 @@ const GlobalHandlers = {
                 && sessionAttributes.expectingEndSkillConfirmation === true) {
                 // if user says No when prompted whether they will to continue with rollcall then just exit
                 return GlobalHandlers.StopIntentHandler.handle(handlerInput);
-            } if (state === Settings.SKILL_STATES.EXIT_MODE
+            }
+            else if(state === Settings.SKILL_STATES.END_GAME_MODE){
+                return GlobalHandlers.StopIntentHandler.handle(handlerInput);
+            }
+            else if (state === Settings.SKILL_STATES.EXIT_MODE
                 //TODO continue game here add message
                 && sessionAttributes.expectingEndSkillConfirmation === true) { 
-                ctx.reprompt = ["Pick a different color, red, blue, or green."];
+                ctx.reprompt = ["Tell me how many players are playing the game."];
                 ctx.outputSpeech = ["Ok, let's keep going."];
                 ctx.outputSpeech.push(ctx.reprompt);
                 ctx.openMicrophone = true;
@@ -406,7 +467,22 @@ const GlobalHandlers = {
         const ctx = attributesManager.getRequestAttributes();
         let deviceIds = sessionAttributes.DeviceIDs;
         sessionAttributes.game.isStartOfTurn = true;
+
         ctx.outputSpeech = [ctx.t('TIMEOUT_PLAY_MODE')];
+
+
+        if(sessionAttributes.game.turnScore > 0){
+            ctx.outputSpeech.push('Great job! You gained '+sessionAttributes.game.turnScore+' points.');
+        }
+
+        let playerScoreKey = "player";
+        playerScoreKey += (sessionAttributes.game.currentPlayer == 1 ? sessionAttributes.game.playerCount : parseInt(sessionAttributes.game.currentPlayer) - 1);
+
+        let beanNumber = sessionAttributes.game['overallScore'][playerScoreKey];
+        let beanSingularPlural = (beanNumber === 1) ? 'bean' : 'beans';
+        ctx.outputSpeech.push(ctx.t('BEAN_TOTAL', beanNumber, beanSingularPlural));
+
+        ctx.outputSpeech.push(ctx.t('PASS_OR_GO', sessionAttributes.game.currentPlayer));
 
         //TODO give result, ask next user if they want to go or pass
         return handlerInput.responseBuilder.getResponse();
@@ -416,7 +492,6 @@ const GlobalHandlers = {
 
 
     let deviceIds = sessionAttributes.DeviceIDs;
-    deviceIds = deviceIds.slice(-1);
 
     ctx.directives.push(GadgetDirectives.setIdleAnimation(
         ROLL_CALL_ANIMATIONS.Timeout, { 'targetGadgets': deviceIds } ));
@@ -449,6 +524,8 @@ DefaultHandler: {
             else if (handlerInput.requestEnvelope.request.type === 'IntentRequest'
                 && handlerInput.requestEnvelope.request.intent.name === 'chooseCharacterIntent') {
                 return GamePlay.ChooseCharacterIntentHandler(handlerInput);
+            }else{
+                return GlobalHandlers.HelpIntentHandler.handle(handlerInput);
             }
 
             const ctx = handlerInput.attributesManager.getRequestAttributes();
@@ -471,7 +548,7 @@ DefaultHandler: {
             let response = handlerInput.responseBuilder.getResponse();
             response.shouldEndSession = true;
             const ctx = handlerInput.attributesManager.getRequestAttributes();
-            ctx.outputSpeech = [ctx.t('EXIT_MESSAGE')];
+            ctx.outputSpeech = [ctx.t('EXIT_MESSAGE', Settings.EXIT_AUDIO)];
             return handlerInput.responseBuilder.getResponse();
         },
     },

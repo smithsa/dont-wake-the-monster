@@ -31,15 +31,21 @@ module.exports = {
         PLAY_MODE: '_PLAY_MODE',
         // Exit mode performs the actions described in
         // https://developer.amazon.com/docs/gadget-skills/exit-echo-button-skill.html
-        EXIT_MODE: '_EXIT_MODE'
+        EXIT_MODE: '_EXIT_MODE',
+        END_GAME_MODE: '_END_GAME_MODE',
+        PLAY_AGAIN_MODE: '_PLAY_AGAIN_MODE',
     },
 
     // We'll use an audio sample of a ticking clock to play whenever the skill is waiting for button presses
     // This is an audio file from the ASK Soundbank: https://developer.amazon.com/docs/custom-skills/foley-sounds.html
     WAITING_AUDIO: '<audio src="https://s3.amazonaws.com/ask-soundlibrary/foley/amzn_sfx_rhythmic_ticking_30s_01.mp3"/>',
-    MOVE_AUDIO: '<audio src="soundbank://soundlibrary/cartoon/amzn_sfx_boing_short_1x_01" />',
-    COIN_AUDIO: '<audio src=\'soundbank://soundlibrary/ui/gameshow/amzn_ui_sfx_gameshow_positive_response_01\'/>',
-    MINE_AUDIO: '<audio src=\'soundbank://soundlibrary/ui/gameshow/amzn_ui_sfx_gameshow_negative_response_01\'/>',
+    STEP_AUDIO: '<audio src="soundbank://soundlibrary/cartoon/amzn_sfx_boing_short_1x_01" />',
+    BEAN_AUDIO: '<audio src=\'soundbank://soundlibrary/ui/gameshow/amzn_ui_sfx_gameshow_positive_response_02\'/>',
+    TRAP_AUDIO: '<audio src=\'soundbank://soundlibrary/ui/gameshow/amzn_ui_sfx_gameshow_negative_response_02\'/>',
+    DRAMA_AUDIO: '<audio src="https://s3.us-east-2.amazonaws.com/dontwakethemonster/dundundunnnnn.mp3"/>',
+    GROWL_AUDIO: '<audio src="https://s3.us-east-2.amazonaws.com/dontwakethemonster/growl.mp3"/>',
+    ROAR_AUDIO: '<audio src="https://s3.us-east-2.amazonaws.com/dontwakethemonster/monster-roar.mp3"/>',
+    EXIT_AUDIO: '<audio src=\'soundbank://soundlibrary/ui/gameshow/amzn_ui_sfx_gameshow_outro_01\'/>',
 
     // We'll set up a map of custom colors to each of the three allowed colord: blue, green and red
     BREATH_CUSTOM_COLORS: { 
@@ -75,27 +81,20 @@ module.exports = {
             'player3': 0,
             'player4': 0
         },
-        'roundScore': {
-            'player1': 0,
-            'player2': 0,
-            'player3': 0,
-            'player4': 0
-        },
         'playerCharacter': {
             'player1': '',
             'player2': '',
             'player3': '',
             'player4': ''
         },
-        'gameBoard':25,
+        'gameBoard':13,
+        'gameBoardPointer': 0,
         'mines': [],
-        'coins': [],
+        'beans': [],
         'mineCount':3,
-        'coinCount':13,
-        'eliminated':[],
-        'characterRollCounter': 0,
-        'round': 1,
+        'beansCount':6,
+        'trapsTriggered':0,
         'currentPlayer': 1,
-        'currentPlayerStepCount': 0,
+        'turnScore': 0
     }
 };

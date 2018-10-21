@@ -15,9 +15,9 @@ const HelperFunctions = {
                 return accumulator+name;
             }else if(index === list.length-1 && list.length !== 1){
                 if(list.length == 2){
-                    accumulator = accumulator + " and " + name;
+                    accumulator = accumulator + " and the " + name;
                 }else{
-                    accumulator = accumulator + ", and " + name;
+                    accumulator = accumulator + ", and the " + name;
                 }
             }else if(index == 0){
                 accumulator = accumulator + name;
@@ -43,12 +43,12 @@ const HelperFunctions = {
             return random_integers;
         }
 
-        let randomNumber = this.getRandomInteger(0, max);
+        let randomNumber = HelperFunctions.getRandomInteger(0, max);
         if(random_integers.indexOf(randomNumber) === -1){
             random_integers.push(randomNumber);
         }
 
-        return this.getUniqueRandomIntegers(count, max, min, random_integers);
+        return HelperFunctions.getUniqueRandomIntegers(count, max, min, random_integers);
     },
 
     /*
@@ -59,13 +59,12 @@ const HelperFunctions = {
             return random_integers;
         }
 
-        let randomNumber = this.getRandomInteger(0, max);
-        console.log('random numbers:',randomNumber);
+        let randomNumber = HelperFunctions.getRandomInteger(0, max);
         if(random_integers.indexOf(randomNumber) === -1 && restricted_numbers.indexOf(randomNumber) === -1){
             random_integers.push(randomNumber);
         }
 
-        return this.getUniqueRandomIntegersWithRestrictions(count, max, restricted_numbers, min, random_integers);
+        return HelperFunctions.getUniqueRandomIntegersWithRestrictions(count, max, restricted_numbers, min, random_integers);
     },
     /*
     * Represents a move on the board. 1 means a bean was there, -1 means a bomb was there, 0 means there was nothing there.
@@ -80,7 +79,27 @@ const HelperFunctions = {
             return 0;
         }
 
+    },
+    /*
+    * Get the winner of the round or overall game
+    */
+    'getWinner': (playersScore) => {
+        const players = Object.keys(playersScore);
+        let highScore = 0;
+        let winners = [];
+        for(let player of players){
+            if(parseInt(playersScore[player]) > highScore){
+                highScore = playersScore[player];
+                winners = [];
+                winners.push(player);
+            }else if(parseInt(playersScore[player]) === highScore){
+                winners.push(player);
+            }
+        }
+
+        return winners;
     }
+
 };
 
 module.exports = HelperFunctions;

@@ -32,7 +32,9 @@ module.exports = {
 
         'EXIT_HELP_INSTRUCTION': 'Or say cancel or exit to quit.',
         'EXIT_MESSAGE': [
-            'Good bye!'
+            'Good bye! %s',
+            'See you later! Thanks for playing! %s',
+            'I hope you enjoyed playing, Adios. %s',
         ],
 
         'ROLL_CALL_INSTRUCTION': [
@@ -45,46 +47,56 @@ module.exports = {
 
 
         'NUM_PLAYERS_TOO_MANY_PLAYERS': 'Sorry, you have too many players. The maximum number of players is 4. ',
+        'NUM_PLAYERS_TOO_FEW_PLAYERS': 'Sorry, you don\'t have enough players. The minimum number of players is 2. ',
         'NUM_PLAYERS_GIVE_NUMBER_AGAIN': 'Please give me the number of players again.',
-        'NUM_PLAYERS_REPROMPT':'How many players will be playing the game? Please give a number between one and four.',
+        'NUM_PLAYERS_REPROMPT':'How many players will be playing the game? This is a two to four player game.',
         'NUM_PLAYERS_PROMPT': [
             'Now let\'s add players to the game. How many players are there?'
         ],
         'NUM_PLAYERS_ADDED_CONFIRMATION':'Ok. %s players it is.',
 
         'CHOOSE_CHARACTER_INSTRUCTION_1':'Now each player can choose a character.',
-        'CHOOSE_CHARACTER_INSTRUCTION_2':'The characters you can choose from are: %s. ',
+        'CHOOSE_CHARACTER_INSTRUCTION_2':'The characters you can choose from are: the %s. ',
         'CHOOSE_CHARACTER_INSTRUCTION_3':'Player 1, what character do you want?',
         'CHOOSE_CHARACTER_UNDEFINED':'Please give me the name of the character you would like to be again. The characters you can choose from are: %s.',
         'CHOOSE_CHARACTER_UNAVAILABLE':'Sorry, that character has already been picked by a player. ',
         'CHOOSE_CHARACTER_UNAVAILABLE_REPROMPT':'Please, choose another character. The characters you can choose from are: %s.',
-        'CHOOSE_CHARACTER_REMAINING_CHARACTERS': 'The characters remaining are: %s. ',
+        'CHOOSE_CHARACTER_REMAINING_CHARACTERS': 'The characters remaining are: the %s. ',
         'CHOOSE_CHARACTER_NEXT_PLAYER': [
             'Player %s, which character would you like?'
         ],
         'CHOOSE_CHARACTER_NEXT_PLAYER_REPROMPT': 'Player %s, please pick as character. Your options are %s.',
-        'CHOOSE_CHARACTER_DONE': 'All players have characters now!',
+        'CHOOSE_CHARACTER_DONE': 'All players have characters now! Let\'s Play.',
         'CHOOSE_CHARACTER_NO_CHOICE': 'Sorry player four, you are stuck with: the %s. Your color will be %s. ',
         'PLAYER_CONFIRMATION': [
             'Got it player %s. You are the %s. Your color will be %s.'
         ],
 
-        'GAME_INSTRUCTIONS_1': 'The Grizzly Ghoul has stolen all the magical beans for winter in his cave. Try to collect the most beans before the monster awakens! ',
-        'GAME_INSTRUCTIONS_2': 'Each button press is a step in the cave and on each step you might find a bean. But beware there are traps in the cave! The third trap will awaken the Grizzly Ghoul!',
-        'GAME_INSTRUCTIONS_3': 'The player with the most magical beans wins the game. ',
+        'GAME_INSTRUCTIONS_1': 'The Grizzly Ghoul has stolen all the magical beans for the winter and has stored them in his cave. While the monster sleeps, try to collect as many beans as you can.  ',
+        'GAME_INSTRUCTIONS_2': 'Each button press is a step in the cave, and on each step, you might uncover a bean. You are allowed up to %s steps per turn. But beware, the Grizzly Ghoul has set traps throughout his cave. Setting off the third trap will wake the monster and end the game.',
+        'GAME_INSTRUCTIONS_3': 'The player with the most magical beans at the end wins. You can choose to take your turn by saying: go, or skip your turn by saying: pass. ',
+        'GAME_INSTRUCTIONS_START': 'Player 1, what would you like to do?',
 
         'CHARACTER_ONE': 'fungus beetle',
         'CHARACTER_TWO': 'star-nosed mole',
-        'CHARACTER_THREE': 'fried-egg jellyfish',
+        'CHARACTER_THREE': 'fried egg jellyfish',
         'CHARACTER_FOUR': 'furry potato',
         'CHARACTER_ONE_COLOR': 'green',
         'CHARACTER_TWO_COLOR': 'orange',
         'CHARACTER_THREE_COLOR': 'blue',
         'CHARACTER_FOUR_COLOR': 'purple',
 
+        'BEAN_TOTAL':[
+            'So far you have a total of %s %s.'
+        ],
+
+        'PASS_OR_GO': 'Player %s, it\'s your turn',
+
         'INCREMENT_STEP_MESSAGE': [
-            'Player %s, make your move.',
-            'Player %s, your turn has come!.'
+            'Make your move.',
+            'Take your turn.',
+            'Shine like a star and take your turn.',
+            'Good Choice!',
         ]
     }
 }
