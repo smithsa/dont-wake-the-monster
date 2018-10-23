@@ -29,8 +29,6 @@ module.exports = {
         CHOOSE_CHARACTER_MODE: '_CHOOSE_CHARACTER_MODE',
         PLAYER_COUNT_MODE: '_PLAYER_COUNT_MODE',
         PLAY_MODE: '_PLAY_MODE',
-        // Exit mode performs the actions described in
-        // https://developer.amazon.com/docs/gadget-skills/exit-echo-button-skill.html
         EXIT_MODE: '_EXIT_MODE',
         END_GAME_MODE: '_END_GAME_MODE',
         PLAY_AGAIN_MODE: '_PLAY_AGAIN_MODE',

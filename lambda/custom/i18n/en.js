@@ -15,7 +15,7 @@ module.exports = {
 
         'TIMEOUT_ROLL_CALL': 'For this skill you need a button. Would you like more time to press the button? Say yes to go back and add your button, or no to exit now.',
         'TIMEOUT_PLAYER_COUNT': 'To play the game you will need to give me the number of players. Please tell me the number of players playing.',
-        'TIMEOUT_CHOOSE_CHARACTER': 'Please choose a character by saying the name of the character. The characters you can choose from are: %s.',
+        'TIMEOUT_CHOOSE_CHARACTER': 'Please choose a character for the game by saying the name of the character. The characters you can choose from are the: %s.',
 
         'TIMEOUT_PLAY_MODE': 'You manage to evade the monster so far.',
         'HELP_SYMPATHY': [
@@ -24,9 +24,9 @@ module.exports = {
             'hmmmm, I didn\'t quite understand that. ',
         ],
         'HELP_PROMPT': 'Please say again, or say help if you\'re not sure what to do.',
-        'HELP_ROLL_CALL_INCOMPLETE_1': 'You will need one Echo button to to use this skill. ',
+        'HELP_ROLL_CALL_INCOMPLETE_1': 'You will need one Echo button to use this skill. ',
         'HELP_ROLL_CALL_INCOMPLETE_2': 'The button you plan to use must be pressed for the skill to register it. ',
-        'HELP_ROLL_CALL_INCOMPLETE_3': 'Would you like to continue and register two Echo buttons? ',
+        'HELP_ROLL_CALL_INCOMPLETE_3': 'Would you like to continue and register your Echo buttons? ',
         'HELP_ROLL_CALL_INCOMPLETE_REPROMPT': 'You can say yes to continue, or no or exit to quit.',
         'HELP_CHOOSE_CHARACTER': '',
 
@@ -38,7 +38,7 @@ module.exports = {
         ],
 
         'ROLL_CALL_INSTRUCTION': [
-            'Press the button you want to use for this game.'
+            'You will need 1 button for this game. Press the button you want to use.'
         ],
         'ROLL_CALL_CONFIRMATION':[
             'Awesome. I\'ve registered your button! We\'re almost ready to play.'
@@ -89,6 +89,10 @@ module.exports = {
         'BEAN_TOTAL':[
             'So far you have a total of %s %s.'
         ],
+
+        'HELP_PLAY_AGAIN_INSTRUCTIONS':'Player one, you can take your turn by saying: go, or pass it by saying: pass.',
+        'HELP_END_GAME_MODE':'I last asked, Would you like to play again? if you want to play again say yes, say no if you would like to exit.',
+        'HELP_PLAY_GAME':'Player %s, you can take your turn by saying: go, or pass it by saying: pass.',
 
         'PASS_OR_GO': 'Player %s, it\'s your turn',
 

@@ -30,15 +30,15 @@ const Settings = require('settings.js');
 const ROLL_CALL_ANIMATIONS = {
     'RollCallComplete': {
         'targetGadgets': [],
-        'animations': BasicAnimations.FadeInAnimation(1, "green", 5000)
+        'animations': BasicAnimations.FadeInAnimation(1, "white", 3000)
     },
     'ButtonCheckInIdle': {
         'targetGadgets': [],
-        'animations': BasicAnimations.SolidAnimation(1, "green", 8000)
+        'animations': BasicAnimations.SolidAnimation(1, "blue", 8000)
     },
     'ButtonCheckInDown' : {
         'targetGadgets': [],
-        'animations': BasicAnimations.SolidAnimation(1, "green", 1000)
+        'animations': BasicAnimations.SolidAnimation(1, "blue", 1000)
     },
     'ButtonCheckInUp': {
         'targetGadgets': [],
@@ -115,6 +115,11 @@ const RollCall = {
             'recognizers': ROLL_CALL_RECOGNIZERS, 
             'events': ROLL_CALL_EVENTS 
         }));
+
+        ctx.directives.push(GadgetDirectives.setButtonDownAnimation(
+            ROLL_CALL_ANIMATIONS.ButtonCheckInDown));
+        ctx.directives.push(GadgetDirectives.setButtonUpAnimation(
+            ROLL_CALL_ANIMATIONS.ButtonCheckInUp));
  
         // start keeping track of some state
         sessionAttributes.state = Settings.SKILL_STATES.ROLL_CALL_MODE;
@@ -146,13 +151,9 @@ const RollCall = {
         //  was already handled, we check the make sure the `buttonCount` attribute is set to 0;
         //   if not, we will silently ignore the event
         if (sessionAttributes.buttonCount === 0) {
-            // Say something when we first encounter a button
-            // ctx.outputSpeech = ['Hello, button 1.'];
-            // ctx.outputSpeech.push(Settings.WAITING_AUDIO);
-
             let fistButtonId = ctx.gameInputEvents[0].gadgetId;
             ctx.directives.push(GadgetDirectives.setIdleAnimation(
-                ROLL_CALL_ANIMATIONS.ButtonCheckInIdle, { 'targetGadgets': [fistButtonId] } ));
+                ROLL_CALL_ANIMATIONS.RollCallComplete, { 'targetGadgets': [fistButtonId] } ));
 
             sessionAttributes.DeviceIDs[0] = fistButtonId;
             sessionAttributes.buttonCount = 1;
@@ -172,8 +173,6 @@ const RollCall = {
         ctx.outputSpeech = [];
         ctx.outputSpeech.push(ctx.t('ROLL_CALL_CONFIRMATION'));
         ctx.outputSpeech.push(ctx.reprompt[0]);
-        //ctx.outputSpeech.push(Settings.WAITING_AUDIO);
-
 
         sessionAttributes.isRollCallComplete = true;
         sessionAttributes.state = Settings.SKILL_STATES.PLAYER_COUNT_MODE;

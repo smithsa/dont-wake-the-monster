@@ -54,7 +54,12 @@ var BasicAnimations = {
                     "durationMs": duration,
                     "blend": true,
                     "color": validateColor(color)
-               }
+               },
+                {
+                    "durationMs": 1,
+                    "blend": true,
+                    "color": "000000"
+                }
             ]
           }
         ];

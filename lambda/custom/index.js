@@ -153,7 +153,6 @@ const GlobalHandlers = {
                 let beanCount = Settings.GAME.beansCount + HelperFunctions.getRandomInteger(0,1);
                 sessionAttributes.game.gameBoard = gameBoardCount;
                 sessionAttributes.game.mines = HelperFunctions.getUniqueRandomIntegers(Settings.GAME.mineCount, gameBoardCount - 1);
-                sessionAttributes.game.mines = [0,1,2];
                 sessionAttributes.game.beans = HelperFunctions.getUniqueRandomIntegersWithRestrictions(beanCount, gameBoardCount - 1, sessionAttributes.game.mines);
                 return RollCall.NewSession(handlerInput);
             }
@@ -202,29 +201,58 @@ const GlobalHandlers = {
             let reprompt = "", 
                 outputSpeech = "";
 
-            //TODO add help instruction for game
-            //TODO add help instruction for player count
-            //TODO add help instruction for choosing character
-            if (sessionAttributes.isRollCallComplete === true) {
-                // roll call is complete
-                ctx.reprompt = ["Pick a color to test your buttons: red, blue, or green. "];
-                ctx.reprompt.push(ctx.t('EXIT_HELP_INSTRUCTION'));
+            console.log('Session State: ', sessionAttributes.state);
+            if(sessionAttributes.state === Settings.SKILL_STATES.ROLL_CALL_MODE){
+                if (sessionAttributes.isRollCallComplete === true) {
+                    // roll call is complete
+                    ctx.reprompt = ["Pick a color to test your buttons: red, blue, or green. "];
+                    ctx.reprompt.push(ctx.t('EXIT_HELP_INSTRUCTION'));
 
-                ctx.outputSpeech = ["Now that you have registered a button, "];
-                ctx.outputSpeech.push("Tell me how many players there are. ");
-                ctx.outputSpeech.push("Two to four players can play this game. ");
-                ctx.outputSpeech.push("If you do not wish to continue, you can say exit. ");                
-            } else if(sessionAttributes.isRollCallComplete === false) {
-                // the user hasn't yet completed roll call
-                ctx.reprompt = [ctx.t('HELP_ROLL_CALL_INCOMPLETE_REPROMPT')];
-                ctx.outputSpeech = [ctx.t('HELP_ROLL_CALL_INCOMPLETE_1')];
-                ctx.outputSpeech.push(ctx.t('HELP_ROLL_CALL_INCOMPLETE_2'));
-                ctx.outputSpeech.push(ctx.t('HELP_ROLL_CALL_INCOMPLETE_3'));
-                                
-                sessionAttributes.expectingEndSkillConfirmation = true;
-            }  
-            
+                    ctx.outputSpeech = ["Now that you have registered a button, "];
+                    ctx.outputSpeech.push("Tell me how many players there are. ");
+                    ctx.outputSpeech.push("Two to four players can play this game. ");
+                    ctx.outputSpeech.push("If you do not wish to continue, you can say exit. ");
+                    return handlerInput.responseBuilder.getResponse();
+
+                } else if(sessionAttributes.isRollCallComplete === false) {
+                    // the user hasn't yet completed roll call
+                    ctx.reprompt = [ctx.t('HELP_ROLL_CALL_INCOMPLETE_REPROMPT')];
+                    ctx.outputSpeech = [ctx.t('HELP_ROLL_CALL_INCOMPLETE_1')];
+                    ctx.outputSpeech.push(ctx.t('HELP_ROLL_CALL_INCOMPLETE_2'));
+                    ctx.outputSpeech.push(ctx.t('HELP_ROLL_CALL_INCOMPLETE_3'));
+
+                    sessionAttributes.expectingEndSkillConfirmation = true;
+                }
+            }
+            else if(sessionAttributes.state === Settings.SKILL_STATES.PLAYER_COUNT_MODE){
+                console.log('HELP --> PLAYER_COUNT_MODE');
+                ctx.outputSpeech = [ctx.t('TIMEOUT_PLAYER_COUNT')];
+            }
+            else if(sessionAttributes.state === Settings.SKILL_STATES.CHOOSE_CHARACTER_MODE){
+                console.log('HELP --> CHOOSE_CHARACTER_MODE');
+                let chosenCharacters = sessionAttributes.chosenCharacters;
+                let charactersList = sessionAttributes.characterProperties.reduce(function(list, list_item) {
+                        list.push(list_item.name);
+                        return list;
+                    }, []
+                );
+                let availableCharactersStringBeforePick = HelperFunctions.getRemainingCharacterNames(chosenCharacters, charactersList);
+                ctx.outputSpeech = [ctx.t('TIMEOUT_CHOOSE_CHARACTER', availableCharactersStringBeforePick)];            }
+            else if(sessionAttributes.state === Settings.SKILL_STATES.PLAY_MODE){
+                console.log('HELP --> PLAY_MODE');
+                ctx.outputSpeech = [ctx.t('HELP_PLAY_GAME', sessionAttributes.game.currentPlayer)];
+            }
+            else if(sessionAttributes.state === Settings.SKILL_STATES.PLAY_AGAIN_MODE){
+                console.log('HELP --> PLAY_AGAIN_MODE');
+                ctx.outputSpeech = [ctx.t('HELP_PLAY_AGAIN_INSTRUCTIONS')];
+            }
+            else if(sessionAttributes.state === Settings.SKILL_STATES.END_GAME_MODE){
+                console.log('HELP --> END_GAME_MODE');
+                ctx.outputSpeech = [ctx.t('HELP_END_GAME_MODE')];
+            }
+
             return handlerInput.responseBuilder.getResponse();
+
         }
     },
     StopIntentHandler: {
@@ -256,6 +284,22 @@ const GlobalHandlers = {
         handle(handlerInput) {
             const { attributesManager } = handlerInput;
             const sessionAttributes = attributesManager.getSessionAttributes();
+            const ctx = attributesManager.getRequestAttributes();
+
+            let gameCharacter = sessionAttributes.game.playerCharacter["player"+sessionAttributes.game.currentPlayer];
+            let characterColor = sessionAttributes.characterProperties.find(function (item) {
+                return item.name === gameCharacter;
+            });
+
+            characterColor = characterColor.color;
+            let deviceIds = sessionAttributes.DeviceIDs;
+            // Save Input Handler Request ID
+
+            ctx.directives.push(GadgetDirectives.setIdleAnimation({
+                'targetGadgets': deviceIds,
+                'animations': BasicAnimations.FadeInAnimation(2, characterColor, 3000)
+            } ));
+
             if(sessionAttributes.state = Settings.SKILL_STATES.PLAY_MODE){
                 return GamePlay.incrementStepIntentHandler(handlerInput);
             }
@@ -275,6 +319,21 @@ const GlobalHandlers = {
             const sessionAttributes = attributesManager.getSessionAttributes();
             const ctx = attributesManager.getRequestAttributes();
             ctx.openMicrophone = true;
+
+            let gameCharacter = sessionAttributes.game.playerCharacter["player"+sessionAttributes.game.currentPlayer];
+            let characterColor = sessionAttributes.characterProperties.find(function (item) {
+                return item.name === gameCharacter;
+            });
+
+            characterColor = characterColor.color;
+            let deviceIds = sessionAttributes.DeviceIDs;
+            // Save Input Handler Request ID
+
+            ctx.directives.push(GadgetDirectives.setIdleAnimation({
+                'targetGadgets': deviceIds,
+                'animations': BasicAnimations.FadeInAnimation(2, characterColor, 3000)
+            } ));
+
 
             if(sessionAttributes.state = Settings.SKILL_STATES.PLAY_MODE){
                 let currentPLayerNumber = parseInt(sessionAttributes.game.currentPlayer);
@@ -356,15 +415,9 @@ const GlobalHandlers = {
             const sessionAttributes = attributesManager.getSessionAttributes();
             const ctx = attributesManager.getRequestAttributes();
             const state = sessionAttributes.state || '';
-            // ---- Hanlde "Yes" when we're in the context of Roll Call ...
-            //TODO add second thought for game_state of playing game
-            //TODO add second thought for game_state of getting player count
-            //TODO add second thought for game_state of choosing character
-            //TODO add second thought for game_state of playing have accounted for a repsonse and action
-            //TOOD for all places where user says yes make sure I
+            //TODO for all places where user says yes make sure I check
             if (state === Settings.SKILL_STATES.ROLL_CALL_MODE
                 && sessionAttributes.expectingEndSkillConfirmation === true) {
-                // pass control to the StartRollCall event handler to restart the rollcall process
                 ctx.outputSpeech = [ctx.t('SECOND_THOUGHT_REGISTER_BUTTON')];
                 ctx.outputSpeech.push(Settings.WAITING_AUDIO);
                 ctx.timeout = 30000;
@@ -401,10 +454,6 @@ const GlobalHandlers = {
             const ctx = attributesManager.getRequestAttributes();
             const state = sessionAttributes.state || '';
 
-            //TODO add second thought for game_state of playing game
-            //TODO add second thought for game_state of getting player count
-            //TODO add second thought for game_state of choosing character
-            //TODO add second thought for game_state of playing have accounted for a repsonse and action
             // ---- Hanlde "No" when we're in the context of Roll Call ...
             if (state === Settings.SKILL_STATES.ROLL_CALL_MODE 
                 && sessionAttributes.expectingEndSkillConfirmation === true) {
@@ -415,7 +464,6 @@ const GlobalHandlers = {
                 return GlobalHandlers.StopIntentHandler.handle(handlerInput);
             }
             else if (state === Settings.SKILL_STATES.EXIT_MODE
-                //TODO continue game here add message
                 && sessionAttributes.expectingEndSkillConfirmation === true) { 
                 ctx.reprompt = ["Tell me how many players are playing the game."];
                 ctx.outputSpeech = ["Ok, let's keep going."];
@@ -445,23 +493,7 @@ const GlobalHandlers = {
         console.log('TIMEOUT:', 'ROLL_CALL_MODE');
         ctx.outputSpeech = [ctx.t('TIMEOUT_ROLL_CALL')];
         sessionAttributes.expectingEndSkillConfirmation = true;
-    }
-    else if(sessionAttributes.state == Settings.SKILL_STATES.PLAYER_COUNT_MODE){
-        console.log('TIMEOUT:', 'PLAYER_COUNT_MODE');
-        ctx.outputSpeech = [ctx.t('TIMEOUT_PLAYER_COUNT')];
-    }
-    else if(sessionAttributes.state == Settings.SKILL_STATES.CHOOSE_CHARACTER_MODE){
-        let chosenCharacters = sessionAttributes.chosenCharacters;
-        let charactersList = sessionAttributes.characterProperties.reduce(function(list, list_item) {
-                list.push(list_item.name);
-                return list;
-            }, []
-        );
-        let availableCharactersStringBeforePick = HelperFunctions.getRemainingCharacterNames(chosenCharacters, charactersList);
-        console.log('TIMEOUT:', 'CHOOSE_CHARACTER_MODE');
-        ctx.outputSpeech = [ctx.t('TIMEOUT_CHOOSE_CHARACTER', availableCharactersStringBeforePick)];
-    }
-    else if(sessionAttributes.state == Settings.SKILL_STATES.PLAY_MODE){
+    }else if(sessionAttributes.state == Settings.SKILL_STATES.PLAY_MODE){
         console.log('TIMEOUT:', 'PLAYMODE GADGET');
         const {attributesManager} = handlerInput;
         const ctx = attributesManager.getRequestAttributes();
@@ -524,7 +556,16 @@ DefaultHandler: {
             else if (handlerInput.requestEnvelope.request.type === 'IntentRequest'
                 && handlerInput.requestEnvelope.request.intent.name === 'chooseCharacterIntent') {
                 return GamePlay.ChooseCharacterIntentHandler(handlerInput);
-            }else{
+            }
+            else if (handlerInput.requestEnvelope.request.type === 'IntentRequest'
+                && handlerInput.requestEnvelope.request.intent.name === 'goIntent') {
+                return GlobalHandlers.GoIntentHandler.handle(handlerInput);
+            }
+            else if (handlerInput.requestEnvelope.request.type === 'IntentRequest'
+                && handlerInput.requestEnvelope.request.intent.name === 'passIntent') {
+                return GlobalHandlers.PassIntentHandler.handle(handlerInput);
+            }
+            else{
                 return GlobalHandlers.HelpIntentHandler.handle(handlerInput);
             }
 

@@ -25,7 +25,12 @@ const BasicAnimations = require('button_animations/basicAnimations.js');
 // import the skill settings constants 
 const Settings = require('settings.js');
 
-
+const GAME_PLAY_ANIMATIONS = {
+    'ChooseCharactersComplete': {
+        'targetGadgets': [],
+        'animations': BasicAnimations.FadeInAnimation(1, "white", 3000)
+    }
+};
     
 // Define a recognizer for button down events that will match when any button is pressed down.
 // We'll use this recognizer as trigger source for the "button_down_event" during play
@@ -86,7 +91,13 @@ const GamePlay = {
 
         let deviceIds = sessionAttributes.DeviceIDs;
 
-        let uColor = 'blue';
+        let gameCharacter = sessionAttributes.game.playerCharacter["player"+sessionAttributes.game.currentPlayer];
+        let characterColor = sessionAttributes.characterProperties.find(function (item) {
+            return item.name === gameCharacter;
+        });
+
+        characterColor = characterColor.color;
+        let uColor = characterColor;
 
         ctx.openMicrophone = false;
 
@@ -161,6 +172,9 @@ const GamePlay = {
             let deviceIds = sessionAttributes.DeviceIDs;
             sessionAttributes.game.playerCount = numberPlayers;
 
+            sessionAttributes.state = Settings.SKILL_STATES.CHOOSE_CHARACTER_MODE;
+
+
             //TODO add animations for adding players
 
             console.log('**list ', sessionAttributes.characterProperties);
@@ -183,10 +197,7 @@ const GamePlay = {
             ctx.outputSpeech.push(ctx.t('CHOOSE_CHARACTER_INSTRUCTION_1'));
             ctx.outputSpeech.push(ctx.t('CHOOSE_CHARACTER_INSTRUCTION_2', availableCharacters));
             ctx.outputSpeech.push(ctx.t('CHOOSE_CHARACTER_INSTRUCTION_3'));
-            ctx.outputSpeech.push(Settings.WAITING_AUDIO);
-            sessionAttributes.state = Settings.SKILL_STATES.CHOOSE_CHARACTER_MODE;
 
-            ctx.openMicrophone = false;
             return handlerInput.responseBuilder.getResponse();
         }
     },
@@ -258,7 +269,7 @@ const GamePlay = {
             //TODO: add animation for the player picked.
             ctx.directives.push(GadgetDirectives.setIdleAnimation({
                 'targetGadgets': deviceIds,
-                'animations': BasicAnimations.SolidAnimation(1, characterColor, 2000)
+                'animations': BasicAnimations.FadeInAnimation(3, characterColor, 3000)
             } ));
 
             let chosenCharacters = sessionAttributes.chosenCharacters;
@@ -275,6 +286,9 @@ const GamePlay = {
             }
 
             if(sessionAttributes.game.playerCount == currentPlayer){
+                // ctx.directives.push(GadgetDirectives.setIdleAnimation(
+                //     GAME_PLAY_ANIMATIONS.ChooseCharactersComplete, { 'targetGadgets': [sessionAttributes.DeviceIDs[0]] } ));
+
                 sessionAttributes.game.currentPlayer = 1;
                 ctx.outputSpeech.push(ctx.t('CHOOSE_CHARACTER_DONE'));
                 ctx.outputSpeech.push(Settings.DRAMA_AUDIO);
@@ -282,36 +296,7 @@ const GamePlay = {
                 ctx.outputSpeech.push(ctx.t('GAME_INSTRUCTIONS_2', Settings.GAME.stepsAllowed));
                 ctx.outputSpeech.push(ctx.t('GAME_INSTRUCTIONS_3'));
                 ctx.outputSpeech.push(ctx.t('GAME_INSTRUCTIONS_START'));
-                //TODO put game logic start here
-                // ctx.openMicrophone = false;
-                //
-                // ctx.directives.push(GadgetDirectives.startInputHandler({
-                //     'timeout': 7000,
-                //     'recognizers': playerStepDirective(deviceIds[0]),
-                //     'events': DIRECT_MODE_EVENTS
-                // } ));
-                //
-                // // Save Input Handler Request ID
-                // sessionAttributes.CurrentInputHandlerID = request.requestId;
-                // console.log("Current Input Handler ID: " + sessionAttributes.CurrentInputHandlerID);
-                //
-                // // Build 'idle' breathing animation, based on the users color of choice, that will play immediately
-                // ctx.directives.push(GadgetDirectives.setIdleAnimation({
-                //     'targetGadgets': deviceIds,
-                //     'animations': BasicAnimations.BreatheAnimation(30, Settings.BREATH_CUSTOM_COLORS['white'], 450)
-                // } ));
-                //
-                // // Build 'button down' animation, based on the users color of choice, for when the button is pressed
-                // ctx.directives.push(GadgetDirectives.setButtonDownAnimation({
-                //     'targetGadgets': deviceIds,
-                //     'animations': BasicAnimations.SolidAnimation(1, 'white', 2000)
-                // } ));
-                //
-                // // build 'button up' animation, based on the users color of choice, for when the button is released
-                // ctx.directives.push(GadgetDirectives.setButtonUpAnimation({
-                //     'targetGadgets': deviceIds,
-                //     'animations': BasicAnimations.SolidAnimation(1, 'white', 200)
-                // } ));
+
 
                 sessionAttributes.state = Settings.SKILL_STATES.PLAY_MODE;
                 return handlerInput.responseBuilder.getResponse();
@@ -319,7 +304,6 @@ const GamePlay = {
 
             ctx.outputSpeech.push(ctx.t('CHOOSE_CHARACTER_REMAINING_CHARACTERS', availableCharactersString));
             ctx.outputSpeech.push(ctx.t('CHOOSE_CHARACTER_NEXT_PLAYER', nextPlayer));
-            ctx.outputSpeech.push(Settings.WAITING_AUDIO);
 
             return handlerInput.responseBuilder.getResponse();
         }
@@ -358,7 +342,7 @@ const GamePlay = {
                 ctx.outputSpeech = [Settings.TRAP_AUDIO];
                 ctx.outputSpeech.push(Settings.ROAR_AUDIO);
                 ctx.outputSpeech.push("You woke the monster. The game is over.");
-                //TODO change winners to chracter names
+                //TODO change winners to characters names
                 let winners = HelperFunctions.getWinner(sessionAttributes.game.overallScore);
                 winners[winners.length-1] = "and "+ winners[winners.length-1];
                 console.log('Winners', winners);
@@ -368,11 +352,10 @@ const GamePlay = {
                     ctx.outputSpeech.push(finalMsg);
 
                  }else{
-                    ctx.outputSpeech.push("Congrats "+winners[0]+" You won the game.");
+                    ctx.outputSpeech.push("Congrats "+winners[0]+" You won the game");
                 }
 
-                //TODO ask user if they want to play again
-                ctx.outputSpeech.push("Would you like to play again? You can say Yes if so or No to exit.");
+                ctx.outputSpeech.push(". Would you like to play again? You can say Yes if so or No to exit.");
 
             }else{
                 ctx.outputSpeech = [Settings.TRAP_AUDIO];

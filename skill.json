@@ -10,13 +10,15 @@
             "Alexa launch Don't Wake the Monster"
           ],
           "name": "Don't Wake the Monster",
-          "description": "A game of avoiding mines."
+          "description": "A game of avoiding mines.",
+          "smallIconUri": "https://s3.us-east-2.amazonaws.com/dontwakethemonster/logo-small.png",
+          "largeIconUri": "https://s3.us-east-2.amazonaws.com/dontwakethemonster/logo.png"
         }
       },
       "isAvailableWorldwide": true,
       "testingInstructions": "Sample Testing Instructions.",
       "category": "CHILDRENS_GAMES",
-      "distributionCountries": ["US", "DE", "GB"],
+      "distributionCountries": ["US", "GB"],
        "gadgetSupport": {
         "requirement": "REQUIRED", 
         "numPlayersMin": 2,
