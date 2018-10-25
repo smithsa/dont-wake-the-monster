@@ -6,10 +6,10 @@
 var COLORS = {
         "white":"ffffff",
         "red":"ff0000",
-        "orange":"ff3300",
+        "orange":"FF6600",
         "green":"00ff00",
         "dark green":"004411",
-        "blue":"0000ff",
+        "blue":"71E7FF",
         "light blue":"00a0b0",        
         "purple":"4b0098",
         "yellow":"ffd400",

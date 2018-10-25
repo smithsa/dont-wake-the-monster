@@ -18,6 +18,11 @@ var BasicAnimations = {
                     "durationMs": duration,
                     "blend": false,
                     "color": validateColor(color)
+               },
+               {
+                    "durationMs": duration,
+                    "blend": false,
+                    "color": validateColor('black')
                }
             ]
           }
@@ -151,6 +156,111 @@ var BasicAnimations = {
                     "durationMs": 500,
                     "blend": false,
                     "color": validateColor(color)
+                }, {
+                    "durationMs": 500,
+                    "blend": false,
+                    "color": "000000"
+                }
+            ]
+          }
+        ];
+    },
+    // Blink Animation
+    'BlinkAnimationTwoColors': function(cycles, color1, color2) {
+        return [
+          {
+            "repeat": cycles,
+            "targetLights": ["1"],
+            "sequence": [
+               {
+                    "durationMs": 500,
+                    "blend": false,
+                    "color": validateColor(color1)
+                }, {
+                    "durationMs": 500,
+                    "blend": false,
+                    "color": "000000"
+                },
+               {
+                    "durationMs": 500,
+                    "blend": false,
+                    "color": validateColor(color1)
+                }, {
+                    "durationMs": 500,
+                    "blend": false,
+                    "color": "000000"
+                },
+                {
+                    "durationMs": 500,
+                    "blend": false,
+                    "color": validateColor(color1)
+                }, {
+                    "durationMs": 500,
+                    "blend": false,
+                    "color": "000000"
+                },
+               {
+                    "durationMs": 500,
+                    "blend": false,
+                    "color": validateColor(color1)
+                }, {
+                    "durationMs": 500,
+                    "blend": false,
+                    "color": "000000"
+                },
+                {
+                    "durationMs": 500,
+                    "blend": false,
+                    "color": validateColor(color1)
+                }, {
+                    "durationMs": 500,
+                    "blend": false,
+                    "color": "000000"
+                },{
+                    "durationMs": 500,
+                    "blend": false,
+                    "color": "000000"
+                },
+                {
+                    "durationMs": 500,
+                    "blend": false,
+                    "color": validateColor(color2)
+                }, {
+                    "durationMs": 500,
+                    "blend": false,
+                    "color": "000000"
+                },
+                {
+                    "durationMs": 500,
+                    "blend": false,
+                    "color": validateColor(color2)
+                }, {
+                    "durationMs": 500,
+                    "blend": false,
+                    "color": "000000"
+                },
+                {
+                    "durationMs": 500,
+                    "blend": false,
+                    "color": validateColor(color2)
+                }, {
+                    "durationMs": 500,
+                    "blend": false,
+                    "color": "000000"
+                },
+                {
+                    "durationMs": 500,
+                    "blend": false,
+                    "color": validateColor(color2)
+                }, {
+                    "durationMs": 500,
+                    "blend": false,
+                    "color": "000000"
+                },
+                {
+                    "durationMs": 500,
+                    "blend": false,
+                    "color": validateColor(color2)
                 }, {
                     "durationMs": 500,
                     "blend": false,

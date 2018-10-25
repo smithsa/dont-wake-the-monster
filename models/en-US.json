@@ -22,6 +22,12 @@
           "name": "AMAZON.StopIntent"
         },
         {
+
+          "name": "AMAZON.FallbackIntent",
+          "samples": []
+
+        },
+        {
           "name": "addPlayersIntent",
           "slots": [
             {
@@ -156,8 +162,8 @@
           "values": [
             {
               "name": {
-                "value": "skip",
-                "synonyms": ["pass", "forgo", "passing", "skipping"]
+                "value": "pass",
+                "synonyms": ["pass", "skip", "forgo", "passing", "skipping"]
               }
             }
           ],

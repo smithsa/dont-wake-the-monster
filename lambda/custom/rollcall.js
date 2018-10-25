@@ -30,7 +30,7 @@ const Settings = require('settings.js');
 const ROLL_CALL_ANIMATIONS = {
     'RollCallComplete': {
         'targetGadgets': [],
-        'animations': BasicAnimations.FadeInAnimation(1, "white", 3000)
+        'animations': BasicAnimations.SolidAnimation(1, "white", 3000)
     },
     'ButtonCheckInIdle': {
         'targetGadgets': [],

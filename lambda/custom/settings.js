@@ -47,13 +47,13 @@ module.exports = {
 
     // We'll set up a map of custom colors to each of the three allowed colord: blue, green and red
     BREATH_CUSTOM_COLORS: { 
-        'blue': '184066',
-        'green': '184518',
-        'red': '603018',
+        'blue': '71E7FF',
+        'green': '00ff00',
+        'red': 'ff0000',
         'black': '000000',
         'white': 'ffffff',
-        'orange': 'e67e22',
-        'purple': '8e44ad',
+        'orange': 'FF6600',
+        'purple': '4b0098',
     },
 
     // Define animations to be played on button down and button up that are like the default animations on the buttons
@@ -93,6 +93,7 @@ module.exports = {
         'beansCount':6,
         'trapsTriggered':0,
         'currentPlayer': 1,
-        'turnScore': 0
+        'turnScore': 0,
+        'isStartOfGame': true //no one has taken a turn yet
     }
 };

@@ -3,28 +3,57 @@
     "publishingInformation": {
       "locales": {
         "en-US": {
-          "summary": "Sample Short Description",
+          "summary": "A game of suspense and fun! Collect as many magical beans as you can Don't wake the monster!",
           "examplePhrases": [
             "Alexa play Don't Wake the Monster",
             "Alexa open Don't Wake the Monster",
             "Alexa launch Don't Wake the Monster"
           ],
           "name": "Don't Wake the Monster",
-          "description": "A game of avoiding mines.",
+          "description": "This skill requires 1 Echo Button.\n\nThe Grizzly Ghoul, has stolen all the magical bean in the land and has taken them to his cave. While he naps, other creatures of the land decide to go and recover the beans in the cave. Each button press represents a step in the cave and you might find a bean with each step. Players are allowed up to 3 steps and given 10 seconds to make their move each turn. But beware, the monster has placed traps in the cave, and the third trap will wake the monster. The goal of the game is to recover as many beans as you can before the monster wakes up. The player with the most beans when the monster wakes up wins!\n\nThis is a multiplayer game targeted towards children between the ages of 5 and 12. Two to four players can play the game and only one button is required to play.",
           "smallIconUri": "https://s3.us-east-2.amazonaws.com/dontwakethemonster/logo-small.png",
-          "largeIconUri": "https://s3.us-east-2.amazonaws.com/dontwakethemonster/logo.png"
+          "largeIconUri": "https://s3.us-east-2.amazonaws.com/dontwakethemonster/logo.png",
+          "keywords":[
+            "games",
+            "chance",
+            "kids game",
+            "kids",
+            "story",
+            "children",
+            "button",
+            "mutliplayer",
+            "family",
+            "monster",
+            "family game",
+            "family game night",
+            "echo button",
+            "suspense"
+          ]
         }
       },
       "isAvailableWorldwide": true,
-      "testingInstructions": "Sample Testing Instructions.",
+      "testingInstructions": "This is a game that requires a button. First, launch the skill and perform the roll call. After the roll call you will need to tell the skill how many players you have for the game. Once you have defined the number of players you can then pick characters for the game for each player. After this the game instructions will play. At the start of each turn you either say go or pass. Go to take the turn, or pass to skip your turn. Make up to 3 steps per turn and you either step on a trap, a magical bean, or it’s just a space. After players step on 3 traps the monster wakes up and the game ends then the winner of the game is determined.",
       "category": "CHILDRENS_GAMES",
-      "distributionCountries": ["US", "GB"],
+      "distributionCountries": ["US"],
        "gadgetSupport": {
         "requirement": "REQUIRED", 
         "numPlayersMin": 2,
         "numPlayersMax": 4,
         "minGadgetButtons": 1,
         "maxGadgetButtons": 1
+      }
+    },
+    "privacyAndCompliance":{
+      "allowsPurchases": false,
+      "usesPersonalInfo": false,
+      "isChildDirected": true,
+      "isExportCompliant": true,
+      "containsAds": false,
+      "locales": {
+        "en-US": {
+          "privacyPolicyUrl": "https://s3.us-east-2.amazonaws.com/dontwakethemonster/privacy-policy.html",
+          "termsOfUseUrl":"https://s3.us-east-2.amazonaws.com/dontwakethemonster/terms-of-use.html"
+        }
       }
     },
     "apis": {
