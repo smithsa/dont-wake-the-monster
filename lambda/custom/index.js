@@ -139,10 +139,10 @@ const GlobalHandlers = {
 
                 //resetting items that need to be updated
                 sessionAttributes.game.trapsTriggered = 0;
-
                 //setting up board again
-                let gameBoardCount = Settings.GAME.gameBoard + HelperFunctions.getRandomInteger(0,2);
-                let beanCount = Settings.GAME.beansCount + HelperFunctions.getRandomInteger(0,1);
+                let generatedGameBoard = HelperFunctions.getBoard(sessionAttributes.game.playerCount);
+                let gameBoardCount = generatedGameBoard.gameBoard;
+                let beanCount =  generatedGameBoard.beansCount;
                 sessionAttributes.game.gameBoard = gameBoardCount;
                 sessionAttributes.game.isStartOfGame = true;
                 sessionAttributes.game.mines = HelperFunctions.getUniqueRandomIntegers(Settings.GAME.mineCount, gameBoardCount - 1);
@@ -153,11 +153,6 @@ const GlobalHandlers = {
                     .getResponse();
             }else{
                 sessionAttributes.game =  Settings.GAME;
-                let gameBoardCount = Settings.GAME.gameBoard + HelperFunctions.getRandomInteger(0,2);
-                let beanCount = Settings.GAME.beansCount + HelperFunctions.getRandomInteger(0,1);
-                sessionAttributes.game.gameBoard = gameBoardCount;
-                sessionAttributes.game.mines = HelperFunctions.getUniqueRandomIntegers(Settings.GAME.mineCount, gameBoardCount - 1);
-                sessionAttributes.game.beans = HelperFunctions.getUniqueRandomIntegersWithRestrictions(beanCount, gameBoardCount - 1, sessionAttributes.game.mines);
                 return RollCall.NewSession(handlerInput);
             }
 
@@ -358,6 +353,14 @@ const GlobalHandlers = {
             const sessionAttributes = attributesManager.getSessionAttributes();
             const { request } = handlerInput.requestEnvelope;
             if(sessionAttributes.state === Settings.SKILL_STATES.CHOOSE_CHARACTER_MODE){
+
+                //creating the game board foe the first play around
+                let generatedGameBoard = HelperFunctions.getBoard(sessionAttributes.game.playerCount);
+                let gameBoardCount = generatedGameBoard.gameBoard;
+                let beanCount =  generatedGameBoard.beansCount;
+                sessionAttributes.game.gameBoard = gameBoardCount;
+                sessionAttributes.game.mines = HelperFunctions.getUniqueRandomIntegers(Settings.GAME.mineCount, gameBoardCount - 1);
+                sessionAttributes.game.beans = HelperFunctions.getUniqueRandomIntegersWithRestrictions(beanCount, gameBoardCount - 1, sessionAttributes.game.mines);
 
                 let gameCharacterSlot = request.intent.slots.gameCharacter;
                 let gameCharacter = undefined;

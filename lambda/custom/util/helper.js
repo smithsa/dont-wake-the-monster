@@ -98,7 +98,28 @@ const HelperFunctions = {
         }
 
         return winners;
-    }
+    },
+    /*
+    * Returns the number of board spaces and magical beans a board should have based on player count
+    */
+     'getBoard': (playerCount) => {
+        let returnBoard = {'gameBoard': 0, 'beansCount': 0};
+        if(playerCount == 3){
+            returnBoard.gameBoard = 15;
+            returnBoard.beansCount = 8;
+        }else if(playerCount == 4){
+            returnBoard.gameBoard = 19;
+            returnBoard.beansCount = 11;
+        }else{
+            returnBoard.gameBoard = 13;
+            returnBoard.beansCount = 6;
+        }
+
+         returnBoard.gameBoard = returnBoard.gameBoard + HelperFunctions.getRandomInteger(0,2);
+         returnBoard.beansCount = returnBoard.beansCount + HelperFunctions.getRandomInteger(0,1);
+
+        return returnBoard;
+     }
 
 };
 
