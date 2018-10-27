@@ -152,19 +152,15 @@ const GamePlay = {
             //count the trap detonated so far
             let triggeredTrapCount = sessionAttributes.game.trapsTriggered;
             sessionAttributes.game.trapsTriggered = parseInt(triggeredTrapCount) + 1;
-            console.log('TRIGGERED MINE TRAP:', sessionAttributes.game.trapsTriggered);
-            console.log('MINE COUNT TRAP:', Settings.GAME.mineCount);
-
             if(sessionAttributes.game.trapsTriggered === Settings.GAME.mineCount){
                 sessionAttributes.state = Settings.SKILL_STATES.END_GAME_MODE;
                 ctx.outputSpeech = [Settings.TRAP_AUDIO];
                 ctx.outputSpeech.push(Settings.ROAR_AUDIO);
-                ctx.outputSpeech.push("You woke the monster. The game is over.");
+                ctx.outputSpeech.push(ctx.t('GAME_OVER_MESSAGE'));
 
                 let winners = HelperFunctions.getWinner(sessionAttributes.game.overallScore);
                 console.log('Winners', winners);
                 if(winners.length > 1){
-                    let drawMsg = "It was a tie between: ";
                     let newWinnersList = [];
                     winners.reduce(function(accumulatedWinnerList, currentValue, currentIndex, winnersList) {
                         if(currentIndex == winnersList.length-1){
@@ -174,15 +170,16 @@ const GamePlay = {
                         }
                         return accumulatedWinnerList;
                     }, newWinnersList);
-                    let finalMsg = drawMsg + newWinnersList.join(', ') + ".";
+                    let theDrawWinners = newWinnersList.join(', ');
+                    let finalMsg = ctx.t('DRAW_MESSAGE', theDrawWinners);
                     ctx.outputSpeech.push(finalMsg);
 
                  }else{
                     let winning_Score = sessionAttributes.game.overallScore[winners[0]];
-                    ctx.outputSpeech.push("Congratulations are in order for the "+sessionAttributes.game.playerCharacter[winners[0]]+". With a total of "+winning_Score+" magical "+( winning_Score == 1 ? 'bean' : 'beans')+", you won the game! ");
+                    ctx.outputSpeech.push(ctx.t('WINNER_MESSAGE', sessionAttributes.game.playerCharacter[winners[0]], winning_Score, ( winning_Score == 1 ? 'bean' : 'beans')));
                 }
 
-                ctx.outputSpeech.push("Would you like to play again? Yes, or no?");
+                ctx.outputSpeech.push(ctx.t('PLAY_AGAIN_ASK'));
 
             }else{
                 ctx.directives.push(GadgetDirectives.setIdleAnimation({
@@ -193,7 +190,7 @@ const GamePlay = {
                 let currentCharacter = sessionAttributes.game.playerCharacter["player"+sessionAttributes.game.currentPlayer];
                 ctx.outputSpeech = [Settings.TRAP_AUDIO];
                 ctx.outputSpeech.push(Settings.GROWL_AUDIO);
-                ctx.outputSpeech.push("Oh no! You set off one of the traps. Your turn is over. It is now the turn of the "+currentCharacter+". You can say go if you want to take your turn. Or pass to skip it.");
+                ctx.outputSpeech.push(ctx.t('TRAP_SET_OFF', currentCharacter));
             }
 
             if (sessionAttributes.CurrentInputHandlerID) {

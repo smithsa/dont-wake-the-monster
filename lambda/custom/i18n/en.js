@@ -15,7 +15,6 @@ module.exports = {
 
         'TIMEOUT_ROLL_CALL': 'For this skill you need a button. Would you like more time to press the button? Say yes to go back and add your button, or no to exit now.',
         'TIMEOUT_PLAYER_COUNT': 'To play the game you will need to give me the number of players. Please tell me the number of players playing.',
-        'TIMEOUT_CHOOSE_CHARACTER': 'Please choose a character for the game by saying the name of the character. The characters you can choose from are: the %s.',
 
         'TIMEOUT_PLAY_MODE': 'You manage to evade the monster so far.',
         'HELP_SYMPATHY': [
@@ -28,7 +27,9 @@ module.exports = {
         'HELP_ROLL_CALL_INCOMPLETE_2': 'The button you plan to use must be pressed for the skill to register it. ',
         'HELP_ROLL_CALL_INCOMPLETE_3': 'Would you like to continue and register your Echo button? ',
         'HELP_ROLL_CALL_INCOMPLETE_REPROMPT': 'You can say yes to continue to register a button for this skill, or no or exit to quit.',
-        'HELP_CHOOSE_CHARACTER': '',
+        'HELP_CHOOSE_CHARACTER': 'Please choose a character for the game by saying the name of the character. The characters you can choose from are: the %s.',
+        'HELP_EXIT_MODE_MESSAGE': 'Ok, let\'s keep going. %s.',
+        'HELP_EXIT_MODE_REPROMPT': 'Tell me how many players are playing the game.',
 
         'EXIT_HELP_INSTRUCTION': 'Or say cancel or exit to quit.',
         'EXIT_MESSAGE': [
@@ -111,6 +112,7 @@ module.exports = {
         'HELP_PLAY_GAME':[
             'Player %s, also known as the %s, you can take your turn by saying: go. Or you can skip your turn by saying: pass.'
         ],
+        'HELP_COMPLETE_ROLL_CALL':'Now that you have registered a button, Tell me how many players there are. Two to four players can play this game. If you do not wish to continue, you can say exit. ',
         'PASS_OR_GO': 'It\'s now the turn of the %s. Would you like to go or pass?',
 
         'INCREMENT_STEP_MESSAGE': [
@@ -118,6 +120,39 @@ module.exports = {
             'You have 10 seconds. Take your turn.',
             'Shine like a star and take your turn. 10 seconds remaining.',
             'This could be good! You have 10 seconds to make your move.',
+        ],
+        'TRAP_SET_OFF':[
+            'Oh no! You set off one of the traps. Your turn is over. It is now the turn of the %s. You can say go if you want to take your turn. Or pass to skip it.'
+        ],
+        'SKIP_MESSAGE':[
+            '%s? Are you scared? Okay we will skip you.',
+            'Okay, we will skip the %s.'
+        ],
+        'SKIP_NEXT_PLAYER_PROMPT':[
+            'It\'s now the %s\'s turn. Would you like to go, or skip?'
+        ],
+        'BEAN_FOUND':[
+            'Great job! You found %s %s.'
+        ],
+        'BEAN_NOT_FOUND':[
+            'You didn\'t find any beans, better luck next time.'
+        ],
+        'DRAW_MESSAGE':[
+            'It was a draw between the %s. Great Job!',
+            'The %s came out on top for the win. Congratulations!'
+        ],
+        'WINNER_MESSAGE':[
+            'Congratulations are in order for the %s. With a total of %s magical %s, you won the game! '
+        ],
+        'GAME_OVER_MESSAGE':[
+            'You woke the monster. The game is over.'
+        ],
+        'PLAY_AGAIN_ASK':[
+            'Would you like to play again? Yes, or no?',
+            'Would you like to try your luck, and play again? Yes, or no?',
+        ],
+        'PLAY_AGAIN_MESSAGE':[
+            'Okay. Let\'s play again. You know the drill. Try to collect as many beans as possible without waking the sleeping monster. Remember, there are traps. Setting off the third trap will wake the monster. The player with the most magical beans when the monster wakes up is the winner. Player one, also known as %s would you like to go or skip?'
         ]
     }
 }

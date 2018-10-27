@@ -121,7 +121,7 @@ const GlobalHandlers = {
 
             const { attributesManager } = handlerInput;
             const sessionAttributes = attributesManager.getSessionAttributes();
-
+            const requestAttributes = attributesManager.getRequestAttributes();
             if(sessionAttributes.hasOwnProperty('state')){
                 sessionAttributes.state = Settings.SKILL_STATES.PLAY_MODE;
                 sessionAttributes.game.currentPlayer = 1;
@@ -147,7 +147,7 @@ const GlobalHandlers = {
                 sessionAttributes.game.isStartOfGame = true;
                 sessionAttributes.game.mines = HelperFunctions.getUniqueRandomIntegers(Settings.GAME.mineCount, gameBoardCount - 1);
                 sessionAttributes.game.beans = HelperFunctions.getUniqueRandomIntegersWithRestrictions(beanCount, gameBoardCount - 1, sessionAttributes.game.mines);
-                let playAgainMsg = 'Okay. Let\'s play again. You know the drill. Try to collect as many beans as possible without waking the sleeping monster. Remember, there are traps. Setting off the third trap will wake the monster. The player with the most magical beans when the monster wakes up is the winner. Player one, also known as '+sessionAttributes.game.playerCharacter['player1']+' would you like to go or skip?';
+                let playAgainMsg = requestAttributes.t('PLAY_AGAIN_MESSAGE', sessionAttributes.game.playerCharacter['player1']);
                 return handlerInput.responseBuilder
                     .speak(playAgainMsg)
                     .getResponse();
@@ -203,10 +203,7 @@ const GlobalHandlers = {
             console.log('Session State: ', sessionAttributes.state);
             if(sessionAttributes.state === Settings.SKILL_STATES.ROLL_CALL_MODE){
                 if (sessionAttributes.isRollCallComplete === true) {
-                    ctx.outputSpeech = ["Now that you have registered a button, "];
-                    ctx.outputSpeech.push("Tell me how many players there are. ");
-                    ctx.outputSpeech.push("Two to four players can play this game. ");
-                    ctx.outputSpeech.push("If you do not wish to continue, you can say exit. ");
+                    ctx.outputSpeech = [ctx.t('HELP_COMPLETE_ROLL_CALL')];
                     return handlerInput.responseBuilder.getResponse();
 
                 } else if(sessionAttributes.isRollCallComplete === false) {
@@ -232,7 +229,7 @@ const GlobalHandlers = {
                     }, []
                 );
                 let availableCharactersStringBeforePick = HelperFunctions.getRemainingCharacterNames(chosenCharacters, charactersList);
-                ctx.outputSpeech = [ctx.t('TIMEOUT_CHOOSE_CHARACTER', availableCharactersStringBeforePick)];            }
+                ctx.outputSpeech = [ctx.t('HELP_CHOOSE_CHARACTER', availableCharactersStringBeforePick)];            }
             else if(sessionAttributes.state === Settings.SKILL_STATES.PLAY_MODE){
                 console.log('HELP --> PLAY_MODE');
                 ctx.outputSpeech = [ctx.t('HELP_PLAY_GAME', sessionAttributes.game.currentPlayer, sessionAttributes.game.playerCharacter["player"+sessionAttributes.game.currentPlayer])];
@@ -309,7 +306,7 @@ const GlobalHandlers = {
                     sessionAttributes.game.playerCount = numberPlayers;
                     sessionAttributes.state = Settings.SKILL_STATES.CHOOSE_CHARACTER_MODE;
 
-                    //TODO add animations for adding players
+                    //TODO add animations and or sound adding players
                     console.log('**list ', sessionAttributes.characterProperties);
                     let availableCharacters = sessionAttributes.characterProperties.reduce(function (acc, list_item) {
                         acc.push(list_item.name);
@@ -553,7 +550,7 @@ const GlobalHandlers = {
 
                 let currentPLayerNumber = parseInt(sessionAttributes.game.currentPlayer);
 
-                ctx.outputSpeech = ["Okay, we will skip the "+gameCharacter+"."];
+                ctx.outputSpeech = [ctx.t('SKIP_MESSAGE', gameCharacter)];
 
                 sessionAttributes.game.currentPlayer = currentPLayerNumber+1;
                 if(currentPLayerNumber == parseInt(sessionAttributes.game.playerCount)){
@@ -561,7 +558,7 @@ const GlobalHandlers = {
                 }
                 let nextPlayer ="player"+( currentPlayerInt == parseInt(sessionAttributes.game.playerCount) ?  1 : currentPlayerInt+1);
 
-                let passMsg = "It's now the "+sessionAttributes.game.playerCharacter[nextPlayer]+"'s turn. Would you like to go, or skip?"
+                let passMsg = ctx.t('SKIP_NEXT_PLAYER_PROMPT', sessionAttributes.game.playerCharacter[nextPlayer]);
                 ctx.outputSpeech.push(passMsg);
 
                 sessionAttributes.game.isStartOfGame = false;
@@ -683,9 +680,10 @@ const GlobalHandlers = {
                 return GlobalHandlers.StopIntentHandler.handle(handlerInput);
             }
             else if (state === Settings.SKILL_STATES.EXIT_MODE
-                && sessionAttributes.expectingEndSkillConfirmation === true) { 
-                ctx.reprompt = ["Tell me how many players are playing the game."];
-                ctx.outputSpeech = ["Ok, let's keep going."];
+                && sessionAttributes.expectingEndSkillConfirmation === true) {
+                //TODO figure out what becomes of this prompt
+                ctx.reprompt = [ctx.t('HELP_EXIT_MODE_REPROMPT')];
+                ctx.outputSpeech = [ctx.t('HELP_EXIT_MODE_MESSAGE', ctx.reprompt[0])];
                 ctx.outputSpeech.push(ctx.reprompt);
                 ctx.openMicrophone = true;
                 sessionAttributes.state = Settings.SKILL_STATES.PLAY_MODE;
@@ -728,10 +726,12 @@ const GlobalHandlers = {
         let beanSingularPlural = (beanNumber === 1) ? 'bean' : 'beans';
 
         if(sessionAttributes.game.turnScore > 0){
-            ctx.outputSpeech.push('Great job! You found '+sessionAttributes.game.turnScore+(sessionAttributes.game.turnScore == 1 ? 'bean.' : 'beans.'));
+            let currentTurnScore = sessionAttributes.game.turnScore;
+            let beanPluralOrSingular = currentTurnScore == 1 ? 'bean.' : 'beans.';
+            ctx.outputSpeech.push(ctx.t('BEAN_FOUND', currentTurnScore, beanPluralOrSingular));
             ctx.outputSpeech.push(ctx.t('BEAN_TOTAL_SUCCESS', beanNumber, beanSingularPlural));
         }else{
-            ctx.outputSpeech.push('You didn\'t find any beans, better luck next time.');
+            ctx.outputSpeech.push(ctx.t('BEAN_NOT_FOUND'));
             ctx.outputSpeech.push(ctx.t('BEAN_TOTAL_FAIL', beanNumber, beanSingularPlural));
         }
 
