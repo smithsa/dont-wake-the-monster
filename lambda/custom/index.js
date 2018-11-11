@@ -33,8 +33,8 @@ const i18n = require('i18next');
 const sprintf = require('i18next-sprintf-postprocessor');
 
 //DynamoDb Memory Persistence
-const { DynamoDbPersistenceAdapter } = require('ask-sdk-dynamodb-persistence-adapter');
-const dynamoDbPersistenceAdapter = new DynamoDbPersistenceAdapter({ tableName : 'dont_wake_the_monster_session_data', createTable: true });
+// const { DynamoDbPersistenceAdapter } = require('ask-sdk-dynamodb-persistence-adapter');
+// const dynamoDbPersistenceAdapter = new DynamoDbPersistenceAdapter({ tableName : 'dont_wake_the_monster_session_data', createTable: true });
 
 const languageStrings = {
     'en' : require('./i18n/en'),
@@ -93,7 +93,6 @@ exports.handler = function (event, context) {
              GlobalHandlers.FallbackHandler,
              GlobalHandlers.DefaultHandler
          )
-         .withPersistenceAdapter(dynamoDbPersistenceAdapter)
          .addRequestInterceptors(LocalizationInterceptor)
          .addRequestInterceptors(GlobalHandlers.RequestInterceptor)
          .addResponseInterceptors(GlobalHandlers.ResponseInterceptor)
@@ -289,7 +288,7 @@ const GlobalHandlers = {
                 if (numberPlayers === undefined) {
                     ctx.reprompt = [ctx.t('NUM_PLAYERS_GIVE_NUMBER_AGAIN')];
                     ctx.outputSpeech = [ctx.t('HELP_SYMPATHY') + ctx.reprompt[0]];
-                    ctx.openMicrophone = false;
+                    ctx.openMicrophone = true;
                     return handlerInput.responseBuilder.getResponse();
                 }else if(numberPlayers > 4 || numberPlayers < 2){
                     ctx.reprompt = [ctx.t('NUM_PLAYERS_GIVE_NUMBER_AGAIN')];
@@ -298,7 +297,7 @@ const GlobalHandlers = {
                     }else{
                         ctx.outputSpeech = [ctx.t('NUM_PLAYERS_TOO_FEW_PLAYERS') + ctx.reprompt[0]];
                     }
-                    ctx.openMicrophone = false;
+                    ctx.openMicrophone = true;
                     return handlerInput.responseBuilder.getResponse();
                 }else {
                     sessionAttributes.game.overallScore = {};
@@ -388,12 +387,12 @@ const GlobalHandlers = {
                 if (gameCharacter === undefined) {
                     ctx.reprompt = [ctx.t('CHOOSE_CHARACTER_UNDEFINED', availableCharactersStringBeforePick)];
                     ctx.outputSpeech = [ctx.t('HELP_SYMPATHY') + ctx.reprompt[0]];
-                    ctx.openMicrophone = false;
+                    ctx.openMicrophone = true;
                     return handlerInput.responseBuilder.getResponse();
                 }else if(is_already_chosen){
                     ctx.reprompt = [ctx.t('CHOOSE_CHARACTER_UNAVAILABLE_REPROMPT', availableCharactersStringBeforePick)];
                     ctx.outputSpeech = [ctx.t('CHOOSE_CHARACTER_UNAVAILABLE') + ctx.reprompt[0]];
-                    ctx.openMicrophone = false;
+                    ctx.openMicrophone = true;
                     return handlerInput.responseBuilder.getResponse();
                 }else {
                     let deviceIds = sessionAttributes.DeviceIDs;
@@ -424,7 +423,7 @@ const GlobalHandlers = {
                     let chosenCharacters = sessionAttributes.chosenCharacters;
                     let availableCharactersString = HelperFunctions.getRemainingCharacterNames(chosenCharacters, charactersList);
 
-                    ctx.openMicrophone = false;
+                    ctx.openMicrophone = true;
                     ctx.outputSpeech = [ctx.t('PLAYER_CONFIRMATION', currentPlayer, gameCharacter, characterColor)];
 
                     if(sessionAttributes.chosenCharacters.length === 3 && sessionAttributes.game.playerCount == 4){
@@ -489,8 +488,8 @@ const GlobalHandlers = {
             const { attributesManager } = handlerInput;
             const sessionAttributes = attributesManager.getSessionAttributes();
             const ctx = attributesManager.getRequestAttributes();
-            if(sessionAttributes.state = Settings.SKILL_STATES.PLAY_MODE){
-                ctx.openMicrophone = false;
+            if(sessionAttributes.state == Settings.SKILL_STATES.PLAY_MODE){
+                ctx.openMicrophone = true;
                 let gameCharacter = sessionAttributes.game.playerCharacter["player"+sessionAttributes.game.currentPlayer];
                 let characterColor = sessionAttributes.characterProperties.find(function (item) {
                     return item.name === gameCharacter;
@@ -528,7 +527,7 @@ const GlobalHandlers = {
             const { attributesManager } = handlerInput;
             const sessionAttributes = attributesManager.getSessionAttributes();
             const ctx = attributesManager.getRequestAttributes();
-            if(sessionAttributes.state = Settings.SKILL_STATES.PLAY_MODE){
+            if(sessionAttributes.state == Settings.SKILL_STATES.PLAY_MODE){
                 ctx.openMicrophone = true;
 
 
@@ -708,11 +707,11 @@ const GlobalHandlers = {
     sessionAttributes.expectingEndSkillConfirmation = false;
     ctx.openMicrophone = true;
 
-    if(sessionAttributes.state == Settings.SKILL_STATES.ROLL_CALL_MODE){
+    if(sessionAttributes.state === Settings.SKILL_STATES.ROLL_CALL_MODE){
         console.log('TIMEOUT:', 'ROLL_CALL_MODE');
         ctx.outputSpeech = [ctx.t('TIMEOUT_ROLL_CALL')];
         sessionAttributes.expectingEndSkillConfirmation = true;
-    }else if(sessionAttributes.state == Settings.SKILL_STATES.PLAY_MODE){
+    }else if(sessionAttributes.state === Settings.SKILL_STATES.PLAY_MODE){
         console.log('TIMEOUT:', 'PLAYMODE GADGET');
         const {attributesManager} = handlerInput;
         const ctx = attributesManager.getRequestAttributes();

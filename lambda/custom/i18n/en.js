@@ -115,7 +115,7 @@ module.exports = {
 
         'INCREMENT_STEP_MESSAGE': [
             'Make your move. You have 10 seconds.',
-            'You have 10 seconds. Take your turn.',
+            'You have 10 seconds. Please take your turn.',
             'Shine like a star and take your turn. 10 seconds remaining.',
             'This could be good! You have 10 seconds to make your move.',
         ]
